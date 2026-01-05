@@ -1,0 +1,129 @@
+/* ========== MODERNIZED DASHBOARD & AVATAR ========== */
+#user-section {
+    text-align:center;
+    margin: 0 0 1rem 0;
+}
+#user-detail {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 18px;
+    background: rgba(30,116,253,0.08);
+    border-radius: 1.5rem;
+    padding: 1.2rem 2rem;
+    box-shadow:0 8px 28px rgba(110,123,245,0.04);
+    margin-bottom: 1.1rem;
+}
+.avatar {
+    border: 3.5px solid #fff;
+    box-shadow: 0 4px 18px rgba(30,116,253,0.17);
+    width:74px; height:74px; display:inline-block;
+    overflow: hidden; border-radius:100%;
+}
+.avatar img.imaged {width:100%; height:100%; object-fit:cover;}
+#user-name {font-size:1.24em; font-weight:700; color: #1e293b;}
+#user-role {font-size:.97em; color: #6c7c94;}
+
+.menu-icon a {
+    border-radius: 18px;
+    padding:11px 0;
+    background: #f0f5ff;
+    box-shadow: 0 2px 12px rgba(30,116,253,0.07);
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    transition: background .22s, transform .18s;
+}
+.menu-icon a.green { background: linear-gradient(20deg,#34c759 80%,#abffa5 100%);}
+.menu-icon a.danger { background: linear-gradient(20deg,#ec4433 80%,#ffbaba 100%);}
+.menu-icon a.warning { background: linear-gradient(20deg,#fe9500 80%,#fff8b0 100%);}
+.menu-icon a.orange { background: linear-gradient(20deg,#FED342 80%,#ffe9b6 100%);}
+.menu-icon a:hover { background: #1e74fd; color:#fff; transform: scale(1.12); }
+
+.item-menu .menu-name { margin: 6px 0 0 0; font-weight: 500; word-break:break-all; }
+
+/* ========== KEKINIAN PRESENSI CARD ========== */
+.gradasigreen, .gradasired {
+    border-radius: 1.5rem!important;
+    box-shadow: 0 6px 24px 0 rgba(52,199,89,0.08);
+    padding:2px 0;
+    border:none;
+}
+.gradasigreen {
+    background: linear-gradient(120deg,rgba(21,189,74,1) 80%,rgba(21,189,74,0.8) 100%);
+}
+.gradasired {
+    background: linear-gradient(120deg,rgba(184,13,45,1) 90%,rgba(184,13,45,0.8) 100%);
+}
+
+.iconpresence {
+    font-size: 2.1em;
+    background:rgba(255,255,255,0.11);
+    border-radius:12px;
+    padding: 6px 16px;
+    color:#fff;
+    margin-right:8px;
+    margin-bottom:10px;
+    box-shadow:0 7px 18px rgba(0,0,0,0.08);
+}
+
+.presencetitle { color: #fff; font-size:1.09em; font-weight:600; margin-bottom:2px;}
+.presencedetail span { color:#e5fff4; font-size:.95em;}
+
+.todaypresence .card { transition: transform .13s;}
+.todaypresence .card:hover { transform: scale(1.03); box-shadow:0 5px 16px rgba(30,116,253,.09)!important; }
+
+.rekappresence #chartdiv {
+    background:#fff;
+    border-radius:1.5rem;
+    box-shadow:0 5px 15px rgba(30,116,253,0.07);
+    margin-bottom:1.5rem;
+}
+
+/* ============= TABS & LIST KEKINIAN ============ */
+.nav-tabs.style1 .nav-link {
+    border-radius: 24px 24px 0 0;
+    font-weight: 500;
+    color: #1e74fd;
+    background: #e9ecff;
+    margin-right: 8px;
+}
+.nav-tabs.style1 .nav-link.active {
+    background: linear-gradient(80deg,#1e74fd 60%, #6c7cfa 95%);
+    color:#fff!important;
+    box-shadow:0 4px 14px rgba(30,116,253,0.11);
+}
+
+.listview .item, .image-listview .item {
+    border-radius: 14px;
+    margin-bottom: 7px;
+    background:#fafcff;
+    box-shadow:0 2px 8px rgba(30,116,253,0.05);
+    transition: box-shadow .18s;
+}
+.listview .item:hover, .image-listview .item:hover {
+    box-shadow: 0 8px 16px rgba(30,116,253,0.10);
+    background:#f0f8ff;
+}
+.icon-box { border-radius: 100px!important; }
+
+.image-listview .item .image {
+    border-radius:100px; box-shadow:0 2px 10px rgba(30,116,253,.09);
+}
+
+.badge, .badge-primary, .badge-danger {
+    border-radius: 11px 11px 11px 11px;
+    font-weight:600;
+    padding: 5px 11px;
+    font-size: .97em;
+    box-shadow:0 2px 8px rgba(30,116,253,.06);
+    letter-spacing:0.02em;
+}
+.badge-danger { background:#ec4433!important; color: #fff; }
+.badge-primary { background: #1e74fd!important; color: #fff; }
+
+/* ============= UTILITY & RESPONSIVE FIX ============= */
+@media (max-width: 700px) {
+    #user-detail { flex-direction:column; padding: 1rem .8rem; gap:10px;}
+    .login-form {padding:1.1rem .6rem!important;}
+}
