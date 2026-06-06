@@ -32,16 +32,23 @@
 @section('content')
 <div class="row" style="margin-top: 70px">
     <div class="col">
-        <input type="text" id="lokasi">
+        <input type="hidden" id="lokasi">
         <div class="webcam-capture"></div>
     </div>
 </div>
 <div class="row">
     <div class="col">
+        @if ($cek > 0)
+        <button id="takeabsen" class="btn btn-danger btn-block">
+            <ion-icon name="camera-outline"></ion-icon>
+            Clock Out
+        </button>
+        @else
         <button id="takeabsen" class="btn btn-primary btn-block">
             <ion-icon name="camera-outline"></ion-icon>
             Clock In
         </button>
+        @endif
     </div>
 </div>
 <div class="row mt-2">
@@ -77,11 +84,11 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
         var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
-        var circle = L.circle([position.coords.latitude, position.coords.longitude], {
+        var circle = L.circle([-7.778497430337909, 110.40738509292642], {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5,
-            radius: 20
+            radius: 10
         }).addTo(map);
     }
 
@@ -104,10 +111,20 @@
             },
             cache: false,
             success: function(respond) {
-                if(respond == 0){
-                    alert('Anda sudah absen hari ini!');
+                var status = respond.split("|");
+                if (status[0] == "success") {
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: status[1],
+                        icon: 'success'
+                    })
+                    setTimeout("location.href='/dashboard'", 3000);
                 } else {
-                    alert('error')
+                    Swal.fire({
+                        title: 'Error',
+                        text: status[1],
+                        icon: 'error'
+                    })
                 }
             }
         });

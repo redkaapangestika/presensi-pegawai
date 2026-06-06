@@ -14,7 +14,13 @@ class PresensiController extends Controller
 {
     public function create()
     {
-        return view('presensi.create');
+        $hariini = date('Y-m-d');
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $cek = DB::table('presensis')
+            ->where('tgl_presensi', $hariini)
+            ->where('id_pegawai', $id_pegawai)
+            ->count();
+        return view('presensi.create', compact('cek'));
     }
 
     public function store(Request $request)
@@ -22,40 +28,92 @@ class PresensiController extends Controller
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
         $tgl_presensi = date('Y-m-d');
 
-        $cek = Presensi::where('id_pegawai', $id_pegawai)
-            ->where('tgl_presensi', $tgl_presensi)
-            ->exists();
-
-        if ($cek) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda sudah presensi hari ini'
-            ], 400);
-        }
-
         $jam = Carbon::now('Asia/Jakarta')->format('H:i:s');
+        $latitudekantor = -7.778497430337909; 
+        $longitudekantor = 110.40738509292642;
         $lokasi = $request->lokasi;
+        $lokasiuser = explode(",", $lokasi);
+        $latitudeuser = $lokasiuser[0];
+        $longitudeuser = $lokasiuser[1];
+
+        $jarak = $this->distance($latitudekantor, $longitudekantor, $latitudeuser, $longitudeuser);
+        $radius = round($jarak['meters']);
+  
+        $cek = DB::table('presensis')
+            ->where('tgl_presensi', $tgl_presensi)
+            ->where('id_pegawai', $id_pegawai)
+            ->count();
+        if ($cek > 0) {
+            $ket = 'out';
+        } else {
+            $ket = 'in';
+        }   
         $image = $request->image;
-        $folderPath = "public/uploads/absensi/";
-        $fileName = $id_pegawai . '_' . Carbon::now()->format('Ymd_His') . '.png';
+        $fileName = $id_pegawai . '_' . $tgl_presensi . "-" . $ket . "_" . Carbon::now()->format('Ymd_His') . '.png';
         $image_parts = explode(";base64,", $image);
         $image_base64 = base64_decode($image_parts[1]);
-        $fileName = Str::uuid() . '.png';
         $path = "uploads/absensi/" . $fileName;
-        $data = [
-            'id_pegawai' => $id_pegawai,
-            'tgl_presensi' => $tgl_presensi,
-            'jam_in' => $jam,
-            'foto_in' => $fileName,
-            'lokasi_in' => $lokasi,
-        ];
-        $simpan = DB::table('presensis')->insert($data);
-        if ($simpan) {
-            echo 0;
-            Storage::disk('public')->put($path, $image_base64);
-        } else {
-            echo 1;
+
+        
+        if($jarak['meters'] > 100){
+            echo "error|Anda berada diluar area kantor (".$radius." meter dari kantor). Silahkan lakukan absensi di dalam area kantor.|";
+            return;
         }
-        // Logic to store presensi data
+        if ($cek > 0) {
+            // CLOCK OUT
+            $data_pulang = [
+                'jam_out' => $jam,
+                'foto_out' => $fileName,
+                'lokasi_out' => $lokasi,
+            ];
+            $update = DB::table('presensis')
+                ->where('tgl_presensi', $tgl_presensi)
+                ->where('id_pegawai', $id_pegawai)
+                ->update($data_pulang);
+            if ($update) {
+                echo "success|Sampai Jumpa! Hati-hati di jalan|out";
+                Storage::disk('public')->put($path, $image_base64);
+            } else {
+                echo "error|Gagal melakukan absensi pulang, silahkan coba lagi nanti.|out";
+            }
+        } else {
+            // CLOCK IN
+            $data = [
+                'id_pegawai' => $id_pegawai,
+                'tgl_presensi' => $tgl_presensi,
+                'jam_in' => $jam,
+                'foto_in' => $fileName,
+                'lokasi_in' => $lokasi,
+            ];
+            $simpan = DB::table('presensis')->insert($data);
+            if ($simpan) {
+                echo "success| Selamat Bekerja! Semoga harimu menyenangkan|in";
+                Storage::disk('public')->put($path, $image_base64);
+            } else {
+                echo "error|Gagal melakukan absensi masuk, silahkan coba lagi nanti.|in";
+            }
+            // Logic to store presensi data
+        }
+    }
+    //Menghitung Jarak
+    function distance($lat1, $lon1, $lat2, $lon2)
+    {
+        $theta = $lon1 - $lon2;
+        $miles = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $miles = acos($miles);
+        $miles = rad2deg($miles);
+        $miles = $miles * 60 * 1.1515;
+        $feet = $miles * 5280;
+        $yards = $feet / 3;
+        $kilometers = $miles * 1.609344;
+        $meters = $kilometers * 1000;
+        return compact('meters');
+    }
+
+    public function editprofile()
+    {
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $data = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+        return view('presensi.editprofile', compact('data'));
     }
 }

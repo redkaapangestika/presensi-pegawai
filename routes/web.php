@@ -18,4 +18,6 @@ Route::middleware(['auth:pegawai'])->group(function () {
 
     Route::get('/presensi/create', [App\Http\Controllers\PresensiController::class, 'create']);
     Route::post('/presensi/store', [App\Http\Controllers\PresensiController::class, 'store']);
+
+    Route::get('/editprofile', [App\Http\Controllers\PresensiController::class, 'editprofile']);
 });
