@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Presensi;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -115,5 +116,45 @@ class PresensiController extends Controller
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
         $data = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
         return view('presensi.editprofile', compact('data'));
+    }
+
+    public function updateprofile(Request $request)
+    {
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $nama_lengkap = $request->nama_lengkap;
+        $no_hp = $request->no_hp;
+        $password = $request->password;
+        $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+        if($request->hasFile('foto')){
+            $foto = $id_pegawai.".".$request->file('foto')->getClientOriginalExtension();
+        } else {
+            $foto = $pegawai->foto;
+        }
+           
+        if(!empty($password)){
+            $data = [
+                'nama_lengkap' => $nama_lengkap,
+                'no_hp' => $no_hp,
+                'password' => Hash::make($password),
+                'foto' => $foto,
+            ];
+        }else{
+            $data = [
+                'nama_lengkap' => $nama_lengkap,
+                'no_hp' => $no_hp,
+                'foto' => $foto,
+            ];
+        }
+
+        $update = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->update($data);
+        if($update){
+            if($request->hasFile('foto')){
+                $folderPath = 'uploads/pegawai/';
+                $request->file('foto')->storeAs('uploads/pegawai', $foto, 'public');
+            }
+            return Redirect()->back()->with('success', 'Profile berhasil diupdate');
+        }else{
+            return Redirect()->back()->with('error', 'Gagal mengupdate profile, silahkan coba lagi nanti');
+        }
     }
 }

@@ -20,4 +20,5 @@ Route::middleware(['auth:pegawai'])->group(function () {
     Route::post('/presensi/store', [App\Http\Controllers\PresensiController::class, 'store']);
 
     Route::get('/editprofile', [App\Http\Controllers\PresensiController::class, 'editprofile']);
+    Route::post('/presensi/updateprofile', [App\Http\Controllers\PresensiController::class, 'updateprofile']);
 });

@@ -3,7 +3,14 @@
 <div class="section" id="user-section">
     <div id="user-detail">
         <div class="avatar">
+            @if(!empty(Auth::guard('pegawai')->user()->foto))
+            @php
+                $path = Storage::url('uploads/pegawai/'.Auth::guard('pegawai')->user()->foto);
+            @endphp
+            <img src="{{ asset('storage/uploads/pegawai/' . Auth::guard('pegawai')->user()->foto) }}" alt="avatar" class="imaged w64 rounded">
+            @else
             <img src="assets/img/sample/avatar/avatar1.jpg" alt="avatar" class="imaged w64 rounded">
+            @endif
         </div>
         <div id="user-info">
             <h3 id="user-name">{{ Auth::guard('pegawai')->user()->nama_lengkap }}</h3>

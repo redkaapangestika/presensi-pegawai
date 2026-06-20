@@ -14,17 +14,35 @@
 @endsection
 
 @section('content')
-<form action="#" method="POST" enctype="multipart/form-data" style="margin-top: 4rem">
+<div class="row" style="margin-top: 4rem">
+    <div class="col">
+        @php
+            $messagesuccess = Session::get('success');
+            $messageerror = Session::get('error');
+        @endphp
+        @if(Session::get('success'))
+            <div class="alert alert-success">
+                {{ $messagesuccess }}
+            </div>
+        @endif
+        @if(Session::get('error'))
+            <div class="alert alert-danger">
+                {{ $messageerror }}
+            </div>
+        @endif
+    </div>
+</div>
+<form action="/presensi/updateprofile" method="POST" enctype="multipart/form-data">
     @csrf
     <div class="col">
         <div class="form-group boxed">
             <div class="input-wrapper">
-                <input type="text" class="form-control" value="{{ $pegawai }}" name="nama_lengkap" placeholder="Nama Lengkap" autocomplete="off">
+                <input type="text" class="form-control" value="{{ $data->nama_lengkap }}" name="nama_lengkap" placeholder="Nama Lengkap" autocomplete="off">
             </div>
         </div>
         <div class="form-group boxed">
             <div class="input-wrapper">
-                <input type="text" class="form-control" value="" name="no_hp" placeholder="No. HP" autocomplete="off">
+                <input type="text" class="form-control" value="{{ $data->no_hp }}" name="no_hp" placeholder="No. HP" autocomplete="off">
             </div>
         </div>
         <div class="form-group boxed">
