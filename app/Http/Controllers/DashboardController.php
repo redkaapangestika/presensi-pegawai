@@ -50,6 +50,20 @@ class DashboardController extends Controller
 
     public function dashboardadmin()
     {
-        return view('dashboard.dashboardadmin');
+        $hariini = date('Y-m-d');
+        $bulanini = date("m") * 1; //1 atau Januari
+        $tahunini = date("Y"); //2026
+        $rekappresensi = DB::table('presensis')
+            ->selectRaw('COUNT(id_pegawai) as jmlhadir, SUM(IF(jam_in > "08.00:00", 1, 0)) as jmlterlambat')
+            ->whereDate('tgl_presensi', $hariini)
+            ->first();
+
+        $rekapizin = DB::table('pengajuan_izin')
+            ->selectRaw('SUM(IF(status="i",1,0)) as jmlizin, SUM(IF(status="s",1,0)) as jmlsakit')
+            ->whereMonth('tgl_izin', $bulanini)
+            ->whereYear('tgl_izin', $tahunini)
+            ->where('status_approved', '1') // Hanya menghitung izin yang disetujui
+            ->first();    
+        return view('dashboard.dashboardadmin', compact('rekappresensi', 'rekapizin'));
     }
 }

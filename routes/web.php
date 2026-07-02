@@ -16,6 +16,8 @@ Route::middleware(['guest:user'])->group(function() {
     Route::get('/panel', function () {
     return view('auth.loginadmin');
     })->name('loginadmin');
+
+    Route::post('/prosesloginadmin', [App\Http\Controllers\AuthController::class, 'prosesloginadmin']);
 });
 
 Route::middleware(['auth:pegawai'])->group(function () {
@@ -38,4 +40,8 @@ Route::middleware(['auth:pegawai'])->group(function () {
     Route::post('/presensi/storeizin', [App\Http\Controllers\PresensiController::class, 'storeizin']);
 });
 
-Route::get('/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'dashboardadmin']);
+Route::middleware(['auth:user'])->group(function () {
+    Route::get('/proseslogoutadmin', [App\Http\Controllers\AuthController::class, 'proseslogoutadmin']);
+    Route::get('/panel/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'dashboardadmin']);
+});
+
