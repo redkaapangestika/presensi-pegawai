@@ -21,4 +21,13 @@ Route::middleware(['auth:pegawai'])->group(function () {
 
     Route::get('/editprofile', [App\Http\Controllers\PresensiController::class, 'editprofile']);
     Route::post('/presensi/updateprofile', [App\Http\Controllers\PresensiController::class, 'updateprofile']);
+
+    //Histori Presensi
+    Route::get('/presensi/histori', [App\Http\Controllers\PresensiController::class, 'histori']);
+    Route::post('/presensi/gethistori', [App\Http\Controllers\PresensiController::class, 'getHistori']);
+
+    //Izin
+    Route::get('/presensi/izin', [App\Http\Controllers\PresensiController::class, 'izin']);
+    Route::get('/presensi/buatizin', [App\Http\Controllers\PresensiController::class, 'buatizin']);
+    Route::post('/presensi/storeizin', [App\Http\Controllers\PresensiController::class, 'storeizin']);
 });

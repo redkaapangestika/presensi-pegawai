@@ -157,4 +157,62 @@ class PresensiController extends Controller
             return Redirect()->back()->with('error', 'Gagal mengupdate profile, silahkan coba lagi nanti');
         }
     }
+
+    public function histori()
+    {
+        $namabulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        return view('presensi.histori', compact('namabulan'));
+    }
+
+    public function getHistori(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+
+        $histori = DB::table('presensis')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereMonth('tgl_presensi', $bulan)
+            ->whereYear('tgl_presensi', $tahun)
+            ->orderBy('tgl_presensi', 'desc')
+            ->get();
+
+        return view('presensi.gethistori', compact('histori'));
+    }
+
+    public function izin()
+    {
+        return view('presensi.izin');
+    }
+    public function buatizin()
+    {
+        return view('presensi.buatizin');
+    }
+
+    public function storeizin(Request $request)
+    {
+        
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $tgl_izin = $request->tgl_izin;
+        $status = $request->status;
+        $keterangan = $request->keterangan;
+
+        $data = [
+            'id_pegawai' => $id_pegawai,
+            'tgl_izin' => $tgl_izin,
+            'status' => $status,
+            'keterangan' => $keterangan,
+            'status_approved' => '0', // Pending
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        DB::table('pengajuan_izin')->insert($data);
+
+        if(DB::table('pengajuan_izin')->insert($data)) {
+            return redirect('/presensi/izin')->with('success', 'Pengajuan izin berhasil dikirim.');
+        } else {
+            return redirect('/presensi/izin')->with('error', 'Gagal mengirim pengajuan izin.');
+        }
+    }
 }
