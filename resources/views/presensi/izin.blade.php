@@ -16,19 +16,45 @@
 <div class="row" style="margin-top: 70px;">
     <div class="col">
         @php
-            $messagesuccess = Session::get('success');
-            $messageerror = Session::get('error');
+        $messagesuccess = Session::get('success');
+        $messageerror = Session::get('error');
         @endphp
         @if(Session::get('success'))
-            <div class="alert alert-success">
-                {{ $messagesuccess }}
-            </div>
+        <div class="alert alert-success">
+            {{ $messagesuccess }}
+        </div>
         @endif
         @if(Session::get('error'))
-            <div class="alert alert-danger">
-                {{ $messageerror }}
-            </div>
+        <div class="alert alert-danger">
+            {{ $messageerror }}
+        </div>
         @endif
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        @foreach ($dataizin as $d)
+        <ul class="listview image-listview">
+            <li>
+                <div class="item">
+                    <div class="in">
+                        <div>
+                            <b>{{ date("d-m-Y", strtotime($d->tgl_izin)) }} ({{ $d->status== "s" ? "Sakit" : "Izin" }})</b><br>
+                            <small class="text-muted">{{ $d->keterangan }}</small>
+                        </div>
+                        @if($d->status_approved == "0")
+                            <span class="badge badge-warning">Pending</span>
+                            @elseif($d->status_approved == "1")
+                            <span class="badge badge-success">Approved</span>
+                            @else
+                            <span class="badge badge-danger">Decline</span>
+                        @endif
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        @endforeach
     </div>
 </div>
 <div class="fab-button bottom-right" style="margin-bottom: 70px;">
@@ -38,4 +64,3 @@
 </div>
 
 @endsection
-

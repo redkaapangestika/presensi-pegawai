@@ -30,7 +30,7 @@ class PresensiController extends Controller
         $tgl_presensi = date('Y-m-d');
 
         $jam = Carbon::now('Asia/Jakarta')->format('H:i:s');
-        $latitudekantor = -7.778497430337909; 
+        $latitudekantor = -7.778497430337909;
         $longitudekantor = 110.40738509292642;
         $lokasi = $request->lokasi;
         $lokasiuser = explode(",", $lokasi);
@@ -39,7 +39,7 @@ class PresensiController extends Controller
 
         $jarak = $this->distance($latitudekantor, $longitudekantor, $latitudeuser, $longitudeuser);
         $radius = round($jarak['meters']);
-  
+
         $cek = DB::table('presensis')
             ->where('tgl_presensi', $tgl_presensi)
             ->where('id_pegawai', $id_pegawai)
@@ -48,16 +48,16 @@ class PresensiController extends Controller
             $ket = 'out';
         } else {
             $ket = 'in';
-        }   
+        }
         $image = $request->image;
         $fileName = $id_pegawai . '_' . $tgl_presensi . "-" . $ket . "_" . Carbon::now()->format('Ymd_His') . '.png';
         $image_parts = explode(";base64,", $image);
         $image_base64 = base64_decode($image_parts[1]);
         $path = "uploads/absensi/" . $fileName;
 
-        
-        if($jarak['meters'] > 100){
-            echo "error|Anda berada diluar area kantor (".$radius." meter dari kantor). Silahkan lakukan absensi di dalam area kantor.|";
+
+        if ($jarak['meters'] > 100) {
+            echo "error|Anda berada diluar area kantor (" . $radius . " meter dari kantor). Silahkan lakukan absensi di dalam area kantor.|";
             return;
         }
         if ($cek > 0) {
@@ -125,20 +125,20 @@ class PresensiController extends Controller
         $no_hp = $request->no_hp;
         $password = $request->password;
         $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
-        if($request->hasFile('foto')){
-            $foto = $id_pegawai.".".$request->file('foto')->getClientOriginalExtension();
+        if ($request->hasFile('foto')) {
+            $foto = $id_pegawai . "." . $request->file('foto')->getClientOriginalExtension();
         } else {
             $foto = $pegawai->foto;
         }
-           
-        if(!empty($password)){
+
+        if (!empty($password)) {
             $data = [
                 'nama_lengkap' => $nama_lengkap,
                 'no_hp' => $no_hp,
                 'password' => Hash::make($password),
                 'foto' => $foto,
             ];
-        }else{
+        } else {
             $data = [
                 'nama_lengkap' => $nama_lengkap,
                 'no_hp' => $no_hp,
@@ -147,13 +147,13 @@ class PresensiController extends Controller
         }
 
         $update = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->update($data);
-        if($update){
-            if($request->hasFile('foto')){
+        if ($update) {
+            if ($request->hasFile('foto')) {
                 $folderPath = 'uploads/pegawai/';
                 $request->file('foto')->storeAs('uploads/pegawai', $foto, 'public');
             }
             return Redirect()->back()->with('success', 'Profile berhasil diupdate');
-        }else{
+        } else {
             return Redirect()->back()->with('error', 'Gagal mengupdate profile, silahkan coba lagi nanti');
         }
     }
@@ -182,16 +182,21 @@ class PresensiController extends Controller
 
     public function izin()
     {
-        return view('presensi.izin');
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $dataizin = DB::table('pengajuan_izin')
+            ->where('id_pegawai', $id_pegawai)
+            ->get();
+        return view('presensi.izin', compact('dataizin'));
     }
     public function buatizin()
     {
+        
         return view('presensi.buatizin');
     }
 
     public function storeizin(Request $request)
     {
-        
+
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
         $tgl_izin = $request->tgl_izin;
         $status = $request->status;
@@ -207,12 +212,14 @@ class PresensiController extends Controller
             'updated_at' => now(),
         ];
 
-        DB::table('pengajuan_izin')->insert($data);
+        $simpan = DB::table('pengajuan_izin')->insert($data);
 
-        if(DB::table('pengajuan_izin')->insert($data)) {
-            return redirect('/presensi/izin')->with('success', 'Pengajuan izin berhasil dikirim.');
+        if ($simpan) {
+            return redirect('/presensi/izin')
+                ->with('success', 'Pengajuan izin berhasil dikirim.');
         } else {
-            return redirect('/presensi/izin')->with('error', 'Gagal mengirim pengajuan izin.');
+            return redirect('/presensi/izin')
+                ->with('error', 'Gagal mengirim pengajuan izin.');
         }
     }
 }

@@ -37,6 +37,14 @@ class DashboardController extends Controller
             ->orderBy('jam_in')
             ->get();
         $namabulan = ["","Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        return view('dashboard.dashboard', compact('presensihariini', 'historibulanini', 'namabulan', 'bulanini', 'tahunini', 'rekappresensi', 'leaderboard'));
+        
+        $rekapizin = DB::table('pengajuan_izin')
+            ->selectRaw('SUM(IF(status="i",1,0)) as jmlizin, SUM(IF(status="s",1,0)) as jmlsakit')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereMonth('tgl_izin', $bulanini)
+            ->whereYear('tgl_izin', $tahunini)
+            ->where('status_approved', '1') // Hanya menghitung izin yang disetujui
+            ->first();
+        return view('dashboard.dashboard', compact('presensihariini', 'historibulanini', 'namabulan', 'bulanini', 'tahunini', 'rekappresensi', 'leaderboard', 'rekapizin'));
     }
 }
