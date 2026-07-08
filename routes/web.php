@@ -43,5 +43,8 @@ Route::middleware(['auth:pegawai'])->group(function () {
 Route::middleware(['auth:user'])->group(function () {
     Route::get('/proseslogoutadmin', [App\Http\Controllers\AuthController::class, 'proseslogoutadmin']);
     Route::get('/panel/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'dashboardadmin']);
+
+    //Pegawai
+    Route::get('/pegawai', [App\Http\Controllers\PegawaiController::class, 'index']);
 });
 
