@@ -19,7 +19,7 @@ Route::match(['get', 'post'], '/proseslogoutadmin', [AuthController::class, 'pro
 // =========================================================================
 
 // Gerbang Login Pegawai
-Route::middleware(['guest:pegawai'])->group(function () {
+Route::middleware(['guest:pegawai', 'nocache'])->group(function () {
     Route::get('/', function () {
         return view('auth.login');
     })->name('login');
@@ -27,7 +27,7 @@ Route::middleware(['guest:pegawai'])->group(function () {
 });
 
 // Gerbang Login Pengelola (Admin, Petugas, Lurah)
-Route::middleware(['guest:user'])->group(function () {
+Route::middleware(['guest:user', 'nocache'])->group(function () {
     Route::get('/panel', function () {
         return view('auth.loginadmin');
     })->name('loginadmin');
@@ -39,7 +39,7 @@ Route::middleware(['guest:user'])->group(function () {
 // =========================================================================
 // 2. AUTH ROUTES : PEGAWAI (Tampilan Mobile App)
 // =========================================================================
-Route::middleware(['auth:pegawai'])->group(function () {
+Route::middleware(['auth:pegawai', 'nocache'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // Presensi
@@ -64,7 +64,7 @@ Route::middleware(['auth:pegawai'])->group(function () {
 // =========================================================================
 // 3. AUTH ROUTES : PENGELOLA (Tampilan Desktop / Admin Panel)
 // =========================================================================
-Route::middleware(['auth:user'])->group(function () {
+Route::middleware(['auth:user', 'nocache'])->group(function () {
 
     // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
     Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
