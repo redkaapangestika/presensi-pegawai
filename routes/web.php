@@ -12,7 +12,6 @@ use App\Http\Controllers\PetugasController;
 // 1. LOGOUT ROUTES (Bebas Middleware - Harus di atas agar tidak terkena auth)
 // =========================================================================
 Route::match(['get', 'post'], '/proseslogout', [AuthController::class, 'proseslogout']);
-Route::match(['get', 'post'], '/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
 
 // =========================================================================
 // 2. GUEST ROUTES (Belum Login)

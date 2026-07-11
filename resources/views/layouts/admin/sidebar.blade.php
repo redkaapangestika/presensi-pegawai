@@ -31,7 +31,7 @@
           </div>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-          <form action="/proseslogoutadmin" method="POST" style="margin:0; padding:0;">
+          <form action="/proseslogout" method="POST" style="margin:0; padding:0;">
             @csrf
             <button type="submit" class="dropdown-item"
               style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">

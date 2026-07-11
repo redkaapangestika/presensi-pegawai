@@ -2,9 +2,9 @@
   <div class="container-xl">
     <!-- Tombol Khusus Toggle Sidebar di Desktop -->
     <a href="#" class="nav-link px-0 d-none d-lg-block me-3" id="desktop-sidebar-toggle" title="Toggle Sidebar">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" 
-           stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
         <line x1="4" y1="6" x2="20" y2="6" />
         <line x1="4" y1="12" x2="20" y2="12" />
         <line x1="4" y1="18" x2="20" y2="18" />
@@ -156,7 +156,7 @@
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
           <a href="./settings.html" class="dropdown-item">Settings</a>
           <div class="dropdown-divider"></div>
-          <form action="/proseslogoutadmin" method="POST" style="margin:0;padding:0;">
+          <form action="/proseslogout" method="POST" style="margin:0;padding:0;">
             @csrf
             <button type="submit" class="dropdown-item"
               style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">
