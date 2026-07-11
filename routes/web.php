@@ -6,13 +6,14 @@ use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PetugasController;
 
 // =========================================================================
 // 1. GUEST ROUTES (Belum Login)
 // =========================================================================
 
 // Gerbang Login Pegawai
-Route::middleware(['guest:pegawai'])->group(function() {
+Route::middleware(['guest:pegawai'])->group(function () {
     Route::get('/', function () {
         return view('auth.login');
     })->name('login');
@@ -20,7 +21,7 @@ Route::middleware(['guest:pegawai'])->group(function() {
 });
 
 // Gerbang Login Pengelola (Admin, Petugas, Lurah)
-Route::middleware(['guest:user'])->group(function() {
+Route::middleware(['guest:user'])->group(function () {
     Route::get('/panel', function () {
         return view('auth.loginadmin');
     })->name('loginadmin');
@@ -58,7 +59,7 @@ Route::middleware(['auth:pegawai'])->group(function () {
 // 3. AUTH ROUTES : PENGELOLA (Tampilan Desktop / Admin Panel)
 // =========================================================================
 Route::middleware(['auth:user'])->group(function () {
-    
+
     // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
     Route::get('/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
     Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
@@ -89,8 +90,18 @@ Route::middleware(['auth:user'])->group(function () {
         // Monitoring Presensi
         Route::get('/presensi/monitoring', [PresensiController::class, 'monitoring']);
         Route::post('/getpresensi', [PresensiController::class, 'getpresensi']);
-        
-        // (Nanti route verifikasi data kerja & cuti kita tambahkan di sini)
+
+        // Atur Jadwal Kerja
+        Route::get('/petugas/jadwal', [PetugasController::class, 'jadwal']);
+
+        // Verifikasi Cuti / Izin
+        Route::get('/petugas/verifikasi-cuti', [PetugasController::class, 'verifikasiCuti']);
+        Route::post('/petugas/verifikasi-cuti/update', [PetugasController::class, 'updateCuti']);
+
+        // Validasi Presensi
+        Route::get('/petugas/validasi-presensi', [PetugasController::class, 'validasiPresensi']);
+        Route::post('/petugas/validasi-presensi/update', [PetugasController::class, 'updateValidasi']);
+        Route::post('/getpresensi-validasi', [PetugasController::class, 'getpresensiValidasi']);
     });
 
     // --------------------------------------------------------
