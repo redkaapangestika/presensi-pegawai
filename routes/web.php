@@ -25,6 +25,7 @@ Route::middleware(['guest:user'])->group(function () {
     Route::get('/panel', function () {
         return view('auth.loginadmin');
     })->name('loginadmin');
+    Route::post('/panel', [AuthController::class, 'prosesloginadmin']);
     Route::post('/prosesloginadmin', [AuthController::class, 'prosesloginadmin']);
 });
 
