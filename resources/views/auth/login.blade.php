@@ -3,7 +3,8 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
@@ -38,18 +39,19 @@
             </div>
             <div class="section mt-1 mb-5">
                 @php
-                $messagewarning = Session::get('warning');
+                    $messagewarning = Session::get('warning');
                 @endphp
                 @if (Session::get('warning'))
-                <div class="alert outline alert-warning">
-                    {{ $messagewarning }}
-                </div>
+                    <div class="alert outline alert-warning">
+                        {{ $messagewarning }}
+                    </div>
                 @endif
                 <form action="/proseslogin" method="POST">
                     @csrf
                     <div class="form-group boxed">
                         <div class="input-wrapper">
-                            <input type="text" name="id_pegawai" class="form-control" id="id_pegawai" placeholder="ID Pegawai">
+                            <input type="text" name="id_pegawai" class="form-control" id="id_pegawai"
+                                placeholder="ID Pegawai">
                             <i class="clear-input">
                                 <ion-icon name="close-circle"></ion-icon>
                             </i>
@@ -58,7 +60,8 @@
 
                     <div class="form-group boxed">
                         <div class="input-wrapper">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="Password">
                             <i class="clear-input">
                                 <ion-icon name="close-circle"></ion-icon>
                             </i>
@@ -74,6 +77,14 @@
                     </div>
 
                 </form>
+
+                <div class="mt-3 text-center">
+                    <a href="/panel" class="btn btn-outline-secondary btn-block"
+                        style="border-radius: 10px; font-size: 0.85rem; padding: 10px;">
+                        <ion-icon name="settings-outline" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
+                        Login sebagai Admin / Petugas / Lurah
+                    </a>
+                </div>
             </div>
         </div>
 
