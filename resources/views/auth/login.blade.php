@@ -72,19 +72,21 @@
                         <div><a href="page-forgot-password.html" class="text-muted">Forgot Password?</a></div>
                     </div>
 
+                    {{-- Tombol Login Admin/Petugas/Lurah --}}
+                    <div class="mt-3 mb-2">
+                        <a href="/panel" class="btn btn-outline-secondary btn-block"
+                            style="border-radius: 10px; font-size: 0.85rem; padding: 10px;">
+                            <ion-icon name="settings-outline"
+                                style="vertical-align: middle; margin-right: 4px;"></ion-icon>
+                            Login sebagai Admin / Petugas / Lurah
+                        </a>
+                    </div>
+
                     <div class="form-button-group">
                         <button type="submit" class="btn btn-primary btn-block btn-lg">Log in</button>
                     </div>
 
                 </form>
-
-                <div class="mt-3 text-center">
-                    <a href="/panel" class="btn btn-outline-secondary btn-block"
-                        style="border-radius: 10px; font-size: 0.85rem; padding: 10px;">
-                        <ion-icon name="settings-outline" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
-                        Login sebagai Admin / Petugas / Lurah
-                    </a>
-                </div>
             </div>
         </div>
 

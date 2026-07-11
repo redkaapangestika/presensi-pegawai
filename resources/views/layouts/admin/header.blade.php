@@ -144,7 +144,7 @@
           <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"></span>
           <div class="d-none d-xl-block ps-2">
             <div>{{ Auth::guard('user')->user()->name }}</div>
-            <div class="mt-1 small text-muted">Administrator</div>
+            <div class="mt-1 small text-muted text-uppercase">{{ Auth::guard('user')->user()->role }}</div>
           </div>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
