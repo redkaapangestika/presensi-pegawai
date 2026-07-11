@@ -1,66 +1,103 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PresensiController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\DepartemenController;
+use App\Http\Controllers\AuthController;
 
+// =========================================================================
+// 1. GUEST ROUTES (Belum Login)
+// =========================================================================
 
-
+// Gerbang Login Pegawai
 Route::middleware(['guest:pegawai'])->group(function() {
     Route::get('/', function () {
-    return view('auth.login');
+        return view('auth.login');
     })->name('login');
-    Route::post('/proseslogin', [App\Http\Controllers\AuthController::class, 'proseslogin']);
+    Route::post('/proseslogin', [AuthController::class, 'proseslogin']);
 });
 
+// Gerbang Login Pengelola (Admin, Petugas, Lurah)
 Route::middleware(['guest:user'])->group(function() {
     Route::get('/panel', function () {
-    return view('auth.loginadmin');
+        return view('auth.loginadmin');
     })->name('loginadmin');
-
-    Route::post('/prosesloginadmin', [App\Http\Controllers\AuthController::class, 'prosesloginadmin']);
+    Route::post('/prosesloginadmin', [AuthController::class, 'prosesloginadmin']);
 });
 
+
+// =========================================================================
+// 2. AUTH ROUTES : PEGAWAI (Tampilan Mobile App)
+// =========================================================================
 Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/proseslogout', [App\Http\Controllers\AuthController::class, 'proseslogout']);
+    Route::get('/proseslogout', [AuthController::class, 'proseslogout']);
 
-    Route::get('/presensi/create', [App\Http\Controllers\PresensiController::class, 'create']);
-    Route::post('/presensi/store', [App\Http\Controllers\PresensiController::class, 'store']);
+    // Presensi
+    Route::get('/presensi/create', [PresensiController::class, 'create']);
+    Route::post('/presensi/store', [PresensiController::class, 'store']);
 
-    Route::get('/editprofile', [App\Http\Controllers\PresensiController::class, 'editprofile']);
-    Route::post('/presensi/updateprofile', [App\Http\Controllers\PresensiController::class, 'updateprofile']);
+    // Profil
+    Route::get('/editprofile', [PresensiController::class, 'editprofile']);
+    Route::post('/presensi/updateprofile', [PresensiController::class, 'updateprofile']);
 
-    //Histori Presensi
-    Route::get('/presensi/histori', [App\Http\Controllers\PresensiController::class, 'histori']);
-    Route::post('/presensi/gethistori', [App\Http\Controllers\PresensiController::class, 'getHistori']);
+    // Histori Presensi
+    Route::get('/presensi/histori', [PresensiController::class, 'histori']);
+    Route::post('/presensi/gethistori', [PresensiController::class, 'getHistori']);
 
-    //Izin
-    Route::get('/presensi/izin', [App\Http\Controllers\PresensiController::class, 'izin']);
-    Route::get('/presensi/buatizin', [App\Http\Controllers\PresensiController::class, 'buatizin']);
-    Route::post('/presensi/storeizin', [App\Http\Controllers\PresensiController::class, 'storeizin']);
+    // Izin
+    Route::get('/presensi/izin', [PresensiController::class, 'izin']);
+    Route::get('/presensi/buatizin', [PresensiController::class, 'buatizin']);
+    Route::post('/presensi/storeizin', [PresensiController::class, 'storeizin']);
 });
 
+
+// =========================================================================
+// 3. AUTH ROUTES : PENGELOLA (Tampilan Desktop / Admin Panel)
+// =========================================================================
 Route::middleware(['auth:user'])->group(function () {
-    Route::get('/proseslogoutadmin', [App\Http\Controllers\AuthController::class, 'proseslogoutadmin']);
-    Route::get('/panel/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'dashboardadmin']);
+    
+    // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
+    Route::get('/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
+    Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
 
-    //Pegawai
-    Route::get('/pegawai', [App\Http\Controllers\PegawaiController::class, 'index']);
-    Route::post('/pegawai/store', [App\Http\Controllers\PegawaiController::class, 'store']);
-    Route::post('/pegawai/edit', [App\Http\Controllers\PegawaiController::class, 'edit']);
-    Route::post('/pegawai/{id}/update', [App\Http\Controllers\PegawaiController::class, 'update']);
-    Route::post('/pegawai/{id}/delete', [App\Http\Controllers\PegawaiController::class, 'delete']);
+    // --------------------------------------------------------
+    // HAK AKSES KHUSUS ADMIN (Manajemen Data Master)
+    // --------------------------------------------------------
+    Route::middleware(['role:admin'])->group(function () {
+        // Pegawai
+        Route::get('/pegawai', [PegawaiController::class, 'index']);
+        Route::post('/pegawai/store', [PegawaiController::class, 'store']);
+        Route::post('/pegawai/edit', [PegawaiController::class, 'edit']);
+        Route::post('/pegawai/{id}/update', [PegawaiController::class, 'update']);
+        Route::post('/pegawai/{id}/delete', [PegawaiController::class, 'delete']);
 
-    //Departemen
-    Route::get('/departemen', [App\Http\Controllers\DepartemenController::class, 'index']);
-    Route::post('/departemen/store', [App\Http\Controllers\DepartemenController::class, 'store']);
-    Route::post('/departemen/edit', [App\Http\Controllers\DepartemenController::class, 'edit']);
-    Route::post('/departemen/{kode_dept}/update', [App\Http\Controllers\DepartemenController::class, 'update']);
-    Route::post('/departemen/{kode_dept}/delete', [App\Http\Controllers\DepartemenController::class, 'delete']);
+        // Departemen
+        Route::get('/departemen', [DepartemenController::class, 'index']);
+        Route::post('/departemen/store', [DepartemenController::class, 'store']);
+        Route::post('/departemen/edit', [DepartemenController::class, 'edit']);
+        Route::post('/departemen/{kode_dept}/update', [DepartemenController::class, 'update']);
+        Route::post('/departemen/{kode_dept}/delete', [DepartemenController::class, 'delete']);
+    });
 
-    //Presensi
-    Route::get('/presensi/monitoring', [App\Http\Controllers\PresensiController::class, 'monitoring']);
-    Route::post('/getpresensi', [App\Http\Controllers\PresensiController::class, 'getpresensi']);
+    // --------------------------------------------------------
+    // HAK AKSES KHUSUS PETUGAS (Operasional & Verifikasi)
+    // --------------------------------------------------------
+    Route::middleware(['role:petugas'])->group(function () {
+        // Monitoring Presensi
+        Route::get('/presensi/monitoring', [PresensiController::class, 'monitoring']);
+        Route::post('/getpresensi', [PresensiController::class, 'getpresensi']);
+        
+        // (Nanti route verifikasi data kerja & cuti kita tambahkan di sini)
+    });
+
+    // --------------------------------------------------------
+    // HAK AKSES LURAH & PETUGAS (Melihat Laporan)
+    // --------------------------------------------------------
+    Route::middleware(['role:lurah,petugas'])->group(function () {
+        // (Nanti route laporan presensi, cuti, dll kita tambahkan di sini)
+    });
+
 });
-

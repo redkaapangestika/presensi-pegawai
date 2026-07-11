@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // --- TAMBAHKAN KODE INI ---
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CekRole::class,
+        ]);
+        // -------------------------
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
