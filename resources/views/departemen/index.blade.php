@@ -5,7 +5,7 @@
         <div class="row g-2 align-items-center">
             <div class="col">
                 <!-- Page pre-title -->
-                <h2 class="page-title">Data Pegawai</h2>
+                <h2 class="page-title">Data Departemen</h2>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <a href="#" class="btn btn-primary" id="btnTambahPegawai">
+                                <a href="#" class="btn btn-primary" id="btnTambahDepartemen">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                         <path d="M12 5l0 14" />
@@ -48,21 +48,11 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-12">
-                                <form action="/pegawai" method="GET">
+                                <form action="/departemen" method="GET">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-10">
                                             <div class="form-group">
-                                                <input type="text" name="nama_pegawai" id="kode_dept" class="form-control" placeholder="Cari Pegawai..." value="{{ Request('nama_pegawai') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <select name="kode_dept" id="kode_dept" class="form-select">
-                                                    <option value="">Pilih Departemen</option>
-                                                    @foreach ($departemen as $d)
-                                                    <option {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }} value="{{ $d->kode_dept }}" {{ request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>{{ $d->nama_dept }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <input type="text" name="nama_dept" id="nama_dept" class="form-control" placeholder="Departemen" value="{{ Request('nama_dept') }}">
                                             </div>
                                         </div>
                                         <div class="col-2">
@@ -87,38 +77,20 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Id Pegawai</th>
-                                            <th>Nama</th>
-                                            <th>Jabatan</th>
-                                            <th>Nomer HP</th>
-                                            <th>Foto</th>
-                                            <th>Departemen</th>
+                                            <th>Kode Dept</th>
+                                            <th>Nama Dept</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($pegawai as $d)
-                                        @php
-                                        $path = Storage::url('uploads/pegawai/' . $d->foto);
-                                        @endphp
-                                        <!-- Data pegawai akan ditampilkan di sini -->
+                                        @foreach ($departemen as $d)
                                         <tr>
-                                            <td>{{ $loop->iteration +$pegawai->firstItem() - 1 }}</td>
-                                            <td>{{ $d->id_pegawai }}</td>
-                                            <td>{{ $d->nama_lengkap }}</td>
-                                            <td>{{ $d->jabatan }}</td>
-                                            <td>{{ $d->no_hp }}</td>
-                                            <td>
-                                                @if (empty($d->foto))
-                                                <img src="{{ asset('assets/img/nophoto.png') }}" class="avatar" alt="">
-                                                @else
-                                                <img src="{{ url($path) }}" class="avatar" alt="">
-                                                @endif
-                                            </td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $d->kode_dept }}</td>
                                             <td>{{ $d->nama_dept }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a href="#" class="edit btn btn-info btn-sm" id_pegawai="{{ $d->id_pegawai }}">
+                                                    <a href="#" class="edit btn btn-info btn-sm" kode_dept="{{ $d->kode_dept }}">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                                             <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -126,7 +98,7 @@
                                                             <path d="M16 5l3 3" />
                                                         </svg>
                                                     </a>
-                                                    <form action="pegawai/{{  $d->id_pegawai }}/delete" method="POST" style="margin-left:5px;">
+                                                    <form action="departemen/{{  $d->kode_dept }}/delete" method="POST" style="margin-left:5px;">
                                                         @csrf
                                                         <a class="btn btn-danger btn-sm delete-confirm">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
@@ -141,34 +113,31 @@
 
                                                     </form>
                                                 </div>
-                            </div>
+                                            </td>
+                                        </tr>
 
-                            </td>
-                            </tr>
-                            @endforeach
-                            </tbody>
-                            </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-
-                    {{ $pegawai->links('vendor.pagination.bootstrap-5') }}
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
 
 </div>
-<div class="modal modal-blur fade" id="modal-inputpegawai" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal modal-blur fade" id="modal-inputdepartemen" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Data Pegawai</h5>
+                <h5 class="modal-title">Tambah Data Departemen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/pegawai/store" method="POST" id="frmPegawai" enctype="multipart/form-data">
+                <form action="/departemen/store" method="POST" id="frmDepartemen">
                     @csrf
                     <div class="row">
                         <div class="col-12">
@@ -186,7 +155,7 @@
                                         <path d="M19 11l0 2" />
                                     </svg>
                                 </span>
-                                <input type="text" value="" id="id_pegawai" class="form-control" placeholder="ID Pegawai" name="id_pegawai">
+                                <input type="text" value="" id="kode_dept" class="form-control" placeholder="Kode Departemen" name="kode_dept">
                             </div>
                         </div>
                     </div>
@@ -200,52 +169,8 @@
                                         <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
                                     </svg>
                                 </span>
-                                <input type="text" value="" id="nama_lengkap" class="form-control" name="nama_lengkap" placeholder="Nama Pegawai">
+                                <input type="text" value="" id="nama_dept" class="form-control" name="nama_dept" placeholder="Nama Departemen">
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="input-icon mb-3">
-                                <span class="input-icon-addon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-screen">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M19.03 17.818a3 3 0 0 0 1.97 -2.818v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8c0 1.317 .85 2.436 2.03 2.84" />
-                                        <path d="M10 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                                        <path d="M8 21a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2" />
-                                    </svg>
-                                </span>
-                                <input type="text" value="" id="jabatan" class="form-control" name="jabatan" placeholder="Jabatan">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="input-icon mb-3">
-                                <span class="input-icon-addon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-phone-plus">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
-                                        <path d="M15 6h6m-3 -3v6" />
-                                    </svg>
-                                </span>
-                                <input type="text" value="" id="no_hp" class="form-control" name="no_hp" placeholder="No HP">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <input type="file" class="form-control" name="foto">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <select name="kode_dept" id="kode_dept" class="form-select">
-                                <option value="">Pilih Departemen</option>
-                                @foreach ($departemen as $d)
-                                <option {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }} value="{{ $d->kode_dept }}" {{ request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>{{ $d->nama_dept }}</option>
-                                @endforeach
-                            </select>
                         </div>
                     </div>
                     <div class="row mt-2">
@@ -269,12 +194,12 @@
     </div>
 </div>
 
-{{-- Modal Edit Pegawai --}}
-<div class="modal modal-blur fade" id="modal-editpegawai" tabindex="-1" role="dialog" aria-hidden="true">
+{{-- Modal Edit Departemen --}}
+<div class="modal modal-blur fade" id="modal-editdepartemen" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Data Pegawai</h5>
+                <h5 class="modal-title">Edit Data Departemen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="loadeditform">
@@ -289,25 +214,25 @@
 @push('myscript')
 <script>
     $(function() {
-        $("#btnTambahPegawai").click(function() {
-            $("#modal-inputpegawai").modal("show");
+        $("#btnTambahDepartemen").click(function() {
+            $("#modal-inputdepartemen").modal("show");
         });
 
         $(".edit").click(function() {
-            var id_pegawai = $(this).attr('id_pegawai');
+            var kode_dept = $(this).attr('kode_dept');
             $.ajax({
                 type: 'POST',
-                url: '/pegawai/edit',
+                url: '/departemen/edit',
                 cache: false,
                 data: {
                     _token: "{{ csrf_token() }}",
-                    id_pegawai: id_pegawai
+                    kode_dept: kode_dept
                 },
                 success: function(respond) {
                     $("#loadeditform").html(respond);
                 }
             });
-            $("#modal-editpegawai").modal("show");
+            $("#modal-editdepartemen").modal("show");
         });
 
         $(".delete-confirm").click(function(e) {
@@ -325,72 +250,36 @@
                 if (result.isConfirmed) {
                     form.submit();
                     Swal.fire({
-                    title: "Deleted!",
-                    text: "Your file has been deleted.",
-                    icon: "success"
-                });
-            }});
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                }
+            });
 
         });
 
-        $("#frmPegawai").submit(function(e) {
-            var id_pegawai = $("#id_pegawai").val();
-            var nama_lengkap = $("#nama_lengkap").val();
-            var jabatan = $("#jabatan").val();
-            var no_hp = $("#no_hp").val();
-            var kode_dept = $("#frmPegawai").find("#kode_dept").val();
-            if (id_pegawai == "") {
-                //alert("ID Pegawai Wajib Diisi");
+        $("#Departemen").submit(function(e) {
+            var kode_dept = $("#kode_dept").val();
+            var nama_dept = $("#nama_dept").val();
+            if (kode_dept == "") {
+                //alert("Kode Dept Wajib Diisi");
                 Swal.fire({
                     title: 'Warning!',
-                    text: 'ID Pegawai Wajib Diisi!',
+                    text: 'Kode Departemen Wajib Diisi!',
                     icon: 'warning',
                     confirmButtonText: 'OK'
-                }).then((result) => {
-                    $("#id_pegawai").focus();
                 });
                 return false;
-            } else if (nama_lengkap == "") {
+            } if (nama_dept == "") {
                 Swal.fire({
                     title: 'Warning!',
-                    text: 'Nama Pegawai Wajib Diisi!',
+                    text: 'Nama Departemen Wajib Diisi!',
                     icon: 'warning',
                     confirmButtonText: 'OK'
-                }).then((result) => {
-                    $("#nama_lengkap").focus();
                 });
                 return false;
-            } else if (jabatan == "") {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'Jabatan Wajib Diisi!',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    $("#jabatan").focus();
-                });
-                return false;
-            } else if (no_hp == "") {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'No HP Wajib Diisi!',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    $("#no_hp").focus();
-                });
-                return false;
-            } else if (kode_dept == "") {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'Departemen Wajib Diisi!',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    $("#kode_dept").focus();
-                });
-                return false;
-            }
+            } 
         });
     });
 </script>

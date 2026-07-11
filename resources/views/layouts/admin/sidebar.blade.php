@@ -164,6 +164,9 @@
                       <a class="dropdown-item" href="/pegawai">
                         Data Pegawai
                       </a>
+                      <a class="dropdown-item" href="/departemen">
+                        Data Departemen
+                      </a>
                     </div>
                   </div>
                 </div>

@@ -47,5 +47,15 @@ Route::middleware(['auth:user'])->group(function () {
     //Pegawai
     Route::get('/pegawai', [App\Http\Controllers\PegawaiController::class, 'index']);
     Route::post('/pegawai/store', [App\Http\Controllers\PegawaiController::class, 'store']);
+    Route::post('/pegawai/edit', [App\Http\Controllers\PegawaiController::class, 'edit']);
+    Route::post('/pegawai/{id}/update', [App\Http\Controllers\PegawaiController::class, 'update']);
+    Route::post('/pegawai/{id}/delete', [App\Http\Controllers\PegawaiController::class, 'delete']);
+
+    //Departemen
+    Route::get('/departemen', [App\Http\Controllers\DepartemenController::class, 'index']);
+    Route::post('/departemen/store', [App\Http\Controllers\DepartemenController::class, 'store']);
+    Route::post('/departemen/edit', [App\Http\Controllers\DepartemenController::class, 'edit']);
+    Route::post('/departemen/{kode_dept}/update', [App\Http\Controllers\DepartemenController::class, 'update']);
+    Route::post('/departemen/{kode_dept}/delete', [App\Http\Controllers\DepartemenController::class, 'delete']);
 });
 
