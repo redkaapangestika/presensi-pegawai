@@ -9,7 +9,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetugasController;
 
 // =========================================================================
-// 1. GUEST ROUTES (Belum Login)
+// 1. LOGOUT ROUTES (Bebas Middleware - Harus di atas agar tidak terkena auth)
+// =========================================================================
+Route::get('/proseslogout', [AuthController::class, 'proseslogout']);
+Route::get('/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
+
+// =========================================================================
+// 2. GUEST ROUTES (Belum Login)
 // =========================================================================
 
 // Gerbang Login Pegawai
@@ -35,7 +41,6 @@ Route::middleware(['guest:user'])->group(function () {
 // =========================================================================
 Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/proseslogout', [AuthController::class, 'proseslogout']);
 
     // Presensi
     Route::get('/presensi/create', [PresensiController::class, 'create']);
@@ -62,7 +67,6 @@ Route::middleware(['auth:pegawai'])->group(function () {
 Route::middleware(['auth:user'])->group(function () {
 
     // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
-    Route::get('/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
     Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
 
     // --------------------------------------------------------

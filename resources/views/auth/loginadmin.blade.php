@@ -47,7 +47,8 @@
             </div>
             <div class="card card-md">
               <div class="card-body">
-                <h2 class="h2 text-center mb-4">Login to your account</h2>
+                <h2 class="h2 text-center mb-1">Login Panel</h2>
+                <p class="text-muted text-center mb-4">Admin &bull; Petugas &bull; Lurah</p>
                 @if (Session::get('warning'))
                   <div class="alert alert-warning">
                     <p>{{ Session::get('warning') }}</p>
@@ -95,6 +96,11 @@
                     <button type="submit" class="btn btn-primary w-100">Sign in</button>
                   </div>
                 </form>
+                <div class="text-center mt-3">
+                  <a href="/" class="text-muted" style="font-size: 0.85rem;">
+                    &larr; Login sebagai Pegawai
+                  </a>
+                </div>
               </div>
 
             </div>
