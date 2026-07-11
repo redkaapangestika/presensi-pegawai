@@ -46,5 +46,6 @@ Route::middleware(['auth:user'])->group(function () {
 
     //Pegawai
     Route::get('/pegawai', [App\Http\Controllers\PegawaiController::class, 'index']);
+    Route::post('/pegawai/store', [App\Http\Controllers\PegawaiController::class, 'store']);
 });
 
