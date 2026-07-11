@@ -19,28 +19,17 @@ class AuthController extends Controller
 
     public function proseslogout(Request $request)
     {
-        if (Auth::guard('pegawai')->check()) {
-            Auth::guard('pegawai')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/');
-        }
-
-        if (Auth::guard('user')->check()) {
-            Auth::guard('user')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/panel');
-        }
-
+        Auth::guard('pegawai')->logout();
+        Auth::guard('user')->logout();
+        $request->session()->flush();
         return redirect('/');
     }
 
     public function proseslogoutadmin(Request $request)
     {
         Auth::guard('user')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::guard('pegawai')->logout();
+        $request->session()->flush();
         return redirect('/panel');
     }
 
