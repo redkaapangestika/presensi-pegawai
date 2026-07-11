@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PresensiController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -57,5 +58,9 @@ Route::middleware(['auth:user'])->group(function () {
     Route::post('/departemen/edit', [App\Http\Controllers\DepartemenController::class, 'edit']);
     Route::post('/departemen/{kode_dept}/update', [App\Http\Controllers\DepartemenController::class, 'update']);
     Route::post('/departemen/{kode_dept}/delete', [App\Http\Controllers\DepartemenController::class, 'delete']);
+
+    //Presensi
+    Route::get('/presensi/monitoring', [App\Http\Controllers\PresensiController::class, 'monitoring']);
+    Route::post('/getpresensi', [App\Http\Controllers\PresensiController::class, 'getpresensi']);
 });
 

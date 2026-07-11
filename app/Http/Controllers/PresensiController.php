@@ -222,4 +222,21 @@ class PresensiController extends Controller
                 ->with('error', 'Gagal mengirim pengajuan izin.');
         }
     }
+
+    public function monitoring()
+    {
+        return view('presensi.monitoring');   
+    }
+
+    public function getpresensi(Request $request){
+        $tanggal = $request->tanggal;
+        $presensi = DB::table('presensis')
+        ->select('presensis.*','pegawais.nama_lengkap','departemens.nama_dept')
+        ->join('pegawais','presensis.id_pegawai','=','pegawais.id_pegawai')
+        ->join('departemens','pegawais.kode_dept','=','departemens.kode_dept')
+        ->where('tgl_presensi',$tanggal)
+        ->get();
+
+        return view('presensi.getpresensi',compact('presensi'));
+    }
 }
