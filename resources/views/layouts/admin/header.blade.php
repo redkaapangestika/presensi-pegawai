@@ -1,9 +1,15 @@
 <header class="navbar navbar-expand-md navbar-light d-none d-lg-flex d-print-none">
   <div class="container-xl">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu"
-      aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Tombol Khusus Toggle Sidebar di Desktop -->
+    <a href="#" class="nav-link px-0 d-none d-lg-block me-3" id="desktop-sidebar-toggle" title="Toggle Sidebar">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" 
+           stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="18" x2="20" y2="18" />
+      </svg>
+    </a>
     <div class="navbar-nav flex-row order-md-last">
       <div class="d-none d-md-flex">
         <a href="?theme=dark" class="nav-link px-0 hide-theme-dark" title="Enable dark mode" data-bs-toggle="tooltip"
