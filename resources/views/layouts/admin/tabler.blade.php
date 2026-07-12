@@ -14,6 +14,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>E-Presensi Kalurahan Condongcatur</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/icon/72x72.png') }}" />
     <!-- CSS files -->
     <link href="{{ asset('tabler/dist/css/tabler.min.css?1674944402') }}" rel="stylesheet" />
     <link href="{{ asset('tabler/dist/css/tabler-flags.min.css?1674944402') }}" rel="stylesheet" />
