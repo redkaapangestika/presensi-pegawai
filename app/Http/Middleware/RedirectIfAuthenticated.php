@@ -22,9 +22,13 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 if ($guard === 'user') {
-                    return redirect(RouteServiceProvider::HOMEADMIN);
+                    return redirect('/panel/dashboardadmin');
+                } else if ($guard === 'pegawai') {
+                    return redirect('/dashboard');
                 }
-                return redirect(RouteServiceProvider::HOME);
+
+                // Fallback default
+                return redirect('/dashboard');
             }
         }
 

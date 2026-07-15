@@ -1,3 +1,36 @@
+<style>
+  #main-sidebar {
+    background-color: #176bb8 !important;
+  }
+
+  /* Default Text and Icon Colors */
+  #main-sidebar .nav-item:not(.active) .nav-link,
+  #main-sidebar .nav-item:not(.active) .nav-link-title,
+  #main-sidebar .nav-item:not(.active) .nav-link-icon svg,
+  #main-sidebar .nav-item:not(.active) .nav-link-icon {
+    color: #ffffff !important;
+  }
+
+  /* Active Link Styles */
+  #main-sidebar .nav-item.active>.nav-link {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    margin: 4px 12px !important;
+    /* padding: 10px 16px !important; Uncomment if you want to push it more */
+  }
+
+  #main-sidebar .nav-item.active>.nav-link .nav-link-title,
+  #main-sidebar .nav-item.active>.nav-link .nav-link-icon svg,
+  #main-sidebar .nav-item.active>.nav-link .nav-link-icon {
+    color: #176bb8 !important;
+    font-weight: 600;
+  }
+
+  #main-sidebar .text-muted {
+    color: #e2e8f0 !important;
+    /* Lighter color for sub-headers */
+  }
+</style>
 <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark" id="main-sidebar">
   <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu"
@@ -6,8 +39,8 @@
     </button>
     <h1 class="navbar-brand navbar-brand-autodark">
       <a href=".">
-        <img src="{{ asset('tabler/static/logo-white.svg') }}" width="110" height="32" alt="Tabler"
-          class="navbar-brand-image">
+        <img src="{{ asset('assets/img/icon/152x152.png') }}" height="60" alt="SIPERKAT Condongcatur"
+          class="navbar-brand-image" style="border-radius: 8px;">
       </a>
     </h1>
     <div class="navbar-nav flex-row d-lg-none">
@@ -24,13 +57,19 @@
       </div>
       <div class="nav-item dropdown">
         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
-          <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"></span>
+          @php
+            $userFotoSide = Auth::guard('user')->user()->foto;
+            $avatarUrlSide = $userFotoSide ? asset('storage/uploads/admin/' . $userFotoSide) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::guard('user')->user()->name) . '&background=random';
+          @endphp
+          <span class="avatar avatar-sm" style="background-image: url('{{ $avatarUrlSide }}')"></span>
           <div class="d-none d-xl-block ps-2">
             <div>{{ Auth::guard('user')->user()->name }}</div>
             <div class="mt-1 small text-muted text-uppercase">{{ Auth::guard('user')->user()->role }}</div>
           </div>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+          <a href="/panel/settings" class="dropdown-item">Settings</a>
+          <div class="dropdown-divider"></div>
           <form action="/proseslogout" method="POST" style="margin:0; padding:0;">
             @csrf
             <button type="submit" class="dropdown-item"
@@ -48,7 +87,7 @@
         {{-- ============================================================ --}}
         {{-- HOME — Semua Role (Admin, Petugas, Lurah) --}}
         {{-- ============================================================ --}}
-        <li class="nav-item">
+        <li class="nav-item {{ request()->is('panel/dashboardadmin') ? 'active' : '' }}">
           <a class="nav-link" href="/panel/dashboardadmin">
             <span class="nav-link-icon d-md-none d-lg-inline-block">
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -68,14 +107,11 @@
         {{-- ============================================================ --}}
         @if(Auth::guard('user')->user()->role == 'admin')
 
-          <li class="nav-item">
-            <span class="nav-link-title ms-3 small text-muted text-uppercase"
-              style="font-size:0.65rem; letter-spacing:0.08em;">Master Data</span>
-          </li>
-
-          <li class="nav-item dropdown">
+          <li
+            class="nav-item dropdown {{ request()->is('pegawai*') || request()->is('departemen*') || request()->is('users*') ? 'active' : '' }}">
             <a class="nav-link dropdown-toggle" href="#navbar-data-master" data-bs-toggle="dropdown"
-              data-bs-auto-close="false" role="button" aria-expanded="false">
+              data-bs-auto-close="false" role="button"
+              aria-expanded="{{ request()->is('pegawai*') || request()->is('departemen*') || request()->is('users*') ? 'true' : 'false' }}">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
                   stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -94,6 +130,7 @@
                 <div class="dropdown-menu-column">
                   <a class="dropdown-item" href="/pegawai">Data Pegawai</a>
                   <a class="dropdown-item" href="/departemen">Data Departemen</a>
+                  <a class="dropdown-item" href="/users">Data Pengelola (Users)</a>
                 </div>
               </div>
             </div>
@@ -106,13 +143,8 @@
         {{-- ============================================================ --}}
         @if(Auth::guard('user')->user()->role == 'petugas')
 
-          <li class="nav-item">
-            <span class="nav-link-title ms-3 small text-muted text-uppercase"
-              style="font-size:0.65rem; letter-spacing:0.08em;">Operasional</span>
-          </li>
-
           {{-- Monitoring Presensi --}}
-          <li class="nav-item">
+          <li class="nav-item {{ request()->is('presensi/monitoring*') ? 'active' : '' }}">
             <a class="nav-link" href="/presensi/monitoring">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -130,7 +162,7 @@
           </li>
 
           {{-- Atur Jadwal --}}
-          <li class="nav-item">
+          <li class="nav-item {{ request()->is('petugas/jadwal*') ? 'active' : '' }}">
             <a class="nav-link" href="/petugas/jadwal">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -150,13 +182,8 @@
             </a>
           </li>
 
-          <li class="nav-item">
-            <span class="nav-link-title ms-3 small text-muted text-uppercase"
-              style="font-size:0.65rem; letter-spacing:0.08em;">Verifikasi</span>
-          </li>
-
           {{-- Verifikasi Cuti --}}
-          <li class="nav-item">
+          <li class="nav-item {{ request()->is('petugas/verifikasi-cuti*') ? 'active' : '' }}">
             <a class="nav-link" href="/petugas/verifikasi-cuti">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -172,7 +199,7 @@
           </li>
 
           {{-- Validasi Presensi --}}
-          <li class="nav-item">
+          <li class="nav-item {{ request()->is('petugas/validasi-presensi*') ? 'active' : '' }}">
             <a class="nav-link" href="/petugas/validasi-presensi">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -188,18 +215,36 @@
         @endif
 
         {{-- ============================================================ --}}
-        {{-- PETUGAS & LURAH — Laporan Akhir --}}
+        {{-- ADMIN & PETUGAS — Pengaturan Sistem --}}
         {{-- ============================================================ --}}
-        @if(in_array(Auth::guard('user')->user()->role, ['petugas', 'lurah']))
-
-          <li class="nav-item">
-            <span class="nav-link-title ms-3 small text-muted text-uppercase"
-              style="font-size:0.65rem; letter-spacing:0.08em;">Laporan</span>
+        @if(in_array(Auth::guard('user')->user()->role, ['petugas']))
+          <li class="nav-item {{ request()->is('panel/settings*') ? 'active' : '' }}">
+            <a class="nav-link" href="/panel/settings">
+              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="icon icon-tabler icons-tabler-outline icon-tabler-settings">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                  <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                </svg>
+              </span>
+              <span class="nav-link-title">Pengaturan Sistem</span>
+            </a>
           </li>
+        @endif
 
-          <li class="nav-item dropdown">
+        {{-- ============================================================ --}}
+        {{-- ============================================================ --}}
+        {{-- PETUGAS, LURAH & ADMIN — Laporan Akhir --}}
+        {{-- ============================================================ --}}
+        @if(in_array(Auth::guard('user')->user()->role, ['petugas', 'lurah', 'admin']))
+
+          <li class="nav-item dropdown {{ request()->is('panel/laporan*') ? 'active' : '' }}">
             <a class="nav-link dropdown-toggle" href="#navbar-laporan" data-bs-toggle="dropdown"
-              data-bs-auto-close="false" role="button" aria-expanded="false">
+              data-bs-auto-close="false" role="button"
+              aria-expanded="{{ request()->is('panel/laporan*') ? 'true' : 'false' }}">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
                   stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -216,9 +261,10 @@
             <div class="dropdown-menu">
               <div class="dropdown-menu-columns">
                 <div class="dropdown-menu-column">
-                  <a class="dropdown-item" href="#">Laporan Presensi</a>
-                  <a class="dropdown-item" href="#">Laporan Kinerja</a>
-                  <a class="dropdown-item" href="#">Laporan Cuti</a>
+                  <a class="dropdown-item" href="/panel/laporan/presensi">Laporan Presensi</a>
+                  <a class="dropdown-item" href="/panel/laporan/kinerja">Laporan Kinerja</a>
+                  <a class="dropdown-item" href="/panel/laporan/cuti">Laporan Cuti</a>
+                  <a class="dropdown-item" href="/panel/laporan/pegawai">Laporan Pegawai</a>
                 </div>
               </div>
             </div>

@@ -77,28 +77,47 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Daftar Departemen</h3>
+                    <h3 class="card-title">Manajemen Dinas Luar Pegawai</h3>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-vcenter table-striped card-table">
                             <thead>
                                 <tr>
-                                    <th>Kode Dept</th>
-                                    <th>Nama Departemen</th>
-                                    <th>Status Jadwal</th>
+                                    <th>ID Pegawai</th>
+                                    <th>Nama Pegawai</th>
+                                    <th>Departemen</th>
+                                    <th>Status Dinas Luar</th>
+                                    <th>Lokasi Presensi (Abaikan Radius)</th>
+                                    <th class="w-1">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($departemens as $dept)
+                                @forelse($pegawais as $p)
                                     <tr>
-                                        <td><span class="badge bg-blue-lt">{{ $dept->kode_dept }}</span></td>
-                                        <td>{{ $dept->nama_dept }}</td>
-                                        <td><span class="badge bg-green">Aktif</span></td>
+                                        <td><span class="badge bg-blue-lt">{{ $p->id_pegawai }}</span></td>
+                                        <td>{{ $p->nama_lengkap }}</td>
+                                        <td><span class="text-muted">{{ $p->nama_dept }}</span></td>
+                                        <td>
+                                            @if($p->is_dinas_luar)
+                                                <span class="badge bg-green">Aktif</span>
+                                            @else
+                                                <span class="badge bg-secondary">Tidak Dinas</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="text-muted">{{ $p->lokasi_dinas ?? '-' }}</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                onclick="editDinasLuar('{{ $p->id_pegawai }}', '{{ $p->nama_lengkap }}', '{{ $p->is_dinas_luar }}', '{{ $p->lokasi_dinas }}')">
+                                                Update
+                                            </button>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center text-muted py-3">Belum ada data departemen.</td>
+                                        <td colspan="6" class="text-center text-muted py-3">Belum ada data pegawai.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -118,7 +137,7 @@
                     <h5 class="modal-title">Edit Jadwal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" action="#">
+                <form method="POST" action="/petugas/jadwal">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -143,6 +162,43 @@
             </div>
         </div>
     </div>
+    {{-- Modal Edit Dinas Luar --}}
+    <div class="modal modal-blur fade" id="modalDinasLuar" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Set Status Dinas Luar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="/petugas/dinasluar">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Pegawai</label>
+                            <input type="hidden" id="modal_id_pegawai" name="id_pegawai">
+                            <input type="text" class="form-control" id="modal_nama_pegawai" readonly disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check form-switch cursor-pointer">
+                                <input class="form-check-input my-auto" type="checkbox" id="modal_is_dinas_luar" name="is_dinas_luar" style="width: 2.5em; height: 1.25em;">
+                                <span class="form-check-label ms-2 h3">Aktifkan Status Dinas Luar</span>
+                            </label>
+                            <small class="text-muted">Jika diaktifkan, pegawai dapat melakukan presensi tanpa batasan radius kantor pusat.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Info Lokasi Penugasan (Opsional)</label>
+                            <textarea class="form-control" rows="2" id="modal_lokasi_dinas" name="lokasi_dinas" placeholder="Cth: Diklat di Balai Kota..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary me-auto"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Terapkan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('myscript')
@@ -152,6 +208,15 @@
             document.getElementById('modal_jam_masuk').value = jam_masuk;
             document.getElementById('modal_jam_pulang').value = jam_pulang;
             var modal = new bootstrap.Modal(document.getElementById('modalEditJadwal'));
+            modal.show();
+        }
+
+        function editDinasLuar(id, nama, is_dinas, lokasi) {
+            document.getElementById('modal_id_pegawai').value = id;
+            document.getElementById('modal_nama_pegawai').value = nama;
+            document.getElementById('modal_is_dinas_luar').checked = is_dinas == 1 ? true : false;
+            document.getElementById('modal_lokasi_dinas').value = lokasi || '';
+            var modal = new bootstrap.Modal(document.getElementById('modalDinasLuar'));
             modal.show();
         }
     </script>

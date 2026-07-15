@@ -24,7 +24,34 @@ class PetugasController extends Controller
             ['hari' => 'Jumat', 'jam_masuk' => '07:30', 'jam_pulang' => '15:30'],
         ];
 
-        return view('petugas.jadwal', compact('departemens', 'jadwal'));
+        // Ambil semua pegawai beserta departemennya untuk list dinas luar
+        $pegawais = DB::table('pegawais')
+            ->select('pegawais.*', 'departemens.nama_dept')
+            ->leftJoin('departemens', 'pegawais.kode_dept', '=', 'departemens.kode_dept')
+            ->orderBy('pegawais.nama_lengkap', 'asc')
+            ->get();
+
+        return view('petugas.jadwal', compact('departemens', 'jadwal', 'pegawais'));
+    }
+
+    public function storeJadwal(Request $request)
+    {
+        // Fitur Dummy Update Jadwal Departemen
+        return redirect('/petugas/jadwal')->with('success', 'Penjadwalan dinas normal berhasil diperbarui!');
+    }
+
+    public function setDinasLuar(Request $request)
+    {
+        $id_pegawai = $request->id_pegawai;
+        $is_dinas = $request->has('is_dinas_luar') ? 1 : 0;
+        $lokasi = $request->lokasi_dinas;
+
+        DB::table('pegawais')->where('id_pegawai', $id_pegawai)->update([
+            'is_dinas_luar' => $is_dinas,
+            'lokasi_dinas' => $lokasi
+        ]);
+
+        return redirect('/petugas/jadwal')->with('success', 'Status dinas luar pegawai berhasil dan izin lokasi telah disesuaikan.');
     }
 
     // -------------------------------------------------------
@@ -82,10 +109,9 @@ class PetugasController extends Controller
         $status = $request->status_validasi; // 'valid' atau 'invalid'
 
         DB::table('presensis')
-            ->where('id', $id)
+            ->where('id_presensi', $id)
             ->update([
                 'status_validasi' => $status,
-                'updated_at' => now(),
             ]);
 
         return redirect('/petugas/validasi-presensi')
@@ -119,6 +145,9 @@ class PetugasController extends Controller
                     $badge = '<span class="badge bg-warning text-dark">Belum Divalidasi</span>';
                 }
                 $jam_in = $p->jam_in ? '<span class="badge bg-green-lt">' . $p->jam_in . '</span>' : '<span class="text-muted">-</span>';
+                if ($p->jam_in && $p->jam_in > '08:00:00') {
+                    $jam_in .= ' <span class="badge bg-danger ms-1">Terlambat</span>';
+                }
                 $jam_out = $p->jam_out ? '<span class="badge bg-red-lt">' . $p->jam_out . '</span>' : '<span class="text-muted">Belum checkout</span>';
 
                 $rows .= '<tr>
@@ -130,17 +159,21 @@ class PetugasController extends Controller
                     <td>' . $badge . '</td>
                     <td>
                         <div class="btn-group">
-                            <form method="POST" action="/petugas/validasi-presensi/update" class="d-inline">
+                            <form method="POST" action="/petugas/validasi-presensi/update" id="form-valid-' . $p->id_presensi . '" class="d-inline">
                                 <input type="hidden" name="_token" value="' . csrf_token() . '">
-                                <input type="hidden" name="id" value="' . $p->id . '">
+                                <input type="hidden" name="id" value="' . $p->id_presensi . '">
                                 <input type="hidden" name="status_validasi" value="valid">
-                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm(\'Tandai sebagai VALID?\')">&#10003; Valid</button>
+                                ' . ($sv == 'valid'
+                    ? '<button type="button" class="btn btn-sm btn-success disabled" disabled>&#10003; Tervalidasi</button>'
+                    : '<button type="button" class="btn btn-sm btn-outline-success" onclick="confirmValidation(\'form-valid-' . $p->id_presensi . '\', true)">&#10003; Valid</button>') . '
                             </form>
-                            <form method="POST" action="/petugas/validasi-presensi/update" class="d-inline ms-1">
+                            <form method="POST" action="/petugas/validasi-presensi/update" id="form-invalid-' . $p->id_presensi . '" class="d-inline ms-1">
                                 <input type="hidden" name="_token" value="' . csrf_token() . '">
-                                <input type="hidden" name="id" value="' . $p->id . '">
+                                <input type="hidden" name="id" value="' . $p->id_presensi . '">
                                 <input type="hidden" name="status_validasi" value="invalid">
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Tandai sebagai TIDAK VALID?\')">&#10005; Tidak Valid</button>
+                                ' . ($sv == 'invalid'
+                    ? '<button type="button" class="btn btn-sm btn-danger disabled" disabled>&#10005; Ditolak</button>'
+                    : '<button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmValidation(\'form-invalid-' . $p->id_presensi . '\', false)">&#10005; Tidak Valid</button>') . '
                             </form>
                         </div>
                     </td>

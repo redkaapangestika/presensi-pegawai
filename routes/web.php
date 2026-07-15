@@ -12,22 +12,31 @@ use App\Http\Controllers\PetugasController;
 // 1. LOGOUT ROUTES (Bebas Middleware - Harus di atas agar tidak terkena auth)
 // =========================================================================
 Route::match(['get', 'post'], '/proseslogout', [AuthController::class, 'proseslogout']);
+Route::match(['get', 'post'], '/proseslogoutadmin', [AuthController::class, 'proseslogoutadmin']);
 
 // =========================================================================
 // 2. GUEST ROUTES (Belum Login)
 // =========================================================================
 
+// Landing Page Universal
+Route::get('/', function () {
+    return view('welcome');
+})->name('landing');
+
 // Gerbang Login Pegawai
 Route::middleware(['guest:pegawai', 'nocache'])->group(function () {
-    Route::get('/', function () {
+    Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
     Route::post('/proseslogin', [AuthController::class, 'proseslogin']);
 });
 
 // Gerbang Login Pengelola (Admin, Petugas, Lurah)
-Route::middleware(['guest:user', 'nocache'])->group(function () {
+Route::middleware(['nocache'])->group(function () {
     Route::get('/panel', function () {
+        if (\Illuminate\Support\Facades\Auth::guard('user')->check()) {
+            return redirect('/panel/dashboardadmin');
+        }
         return view('auth.loginadmin');
     })->name('loginadmin');
     Route::post('/panel', [AuthController::class, 'prosesloginadmin']);
@@ -52,11 +61,14 @@ Route::middleware(['auth:pegawai', 'nocache'])->group(function () {
     // Histori Presensi
     Route::get('/presensi/histori', [PresensiController::class, 'histori']);
     Route::post('/presensi/gethistori', [PresensiController::class, 'getHistori']);
+    Route::get('/presensi/cetaklaporan', [PresensiController::class, 'cetaklaporan']);
 
-    // Izin
+    // Izin & Lokasi
     Route::get('/presensi/izin', [PresensiController::class, 'izin']);
     Route::get('/presensi/buatizin', [PresensiController::class, 'buatizin']);
     Route::post('/presensi/storeizin', [PresensiController::class, 'storeizin']);
+    Route::get('/presensi/cetaklaporancuti', [PresensiController::class, 'cetaklaporancuti']);
+    Route::get('/presensi/lokasi', [PresensiController::class, 'lokasi']);
 });
 
 
@@ -67,6 +79,12 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
 
     // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
     Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
+    Route::get('/panel/settings', [AuthController::class, 'settings']);
+    Route::post('/panel/settings/lokasi', [AuthController::class, 'updateLokasi']);
+
+    // Profil Admin
+    Route::get('/panel/profile', [AuthController::class, 'profile']);
+    Route::post('/panel/profile', [AuthController::class, 'updateProfile']);
 
     // --------------------------------------------------------
     // HAK AKSES KHUSUS ADMIN (Manajemen Data Master)
@@ -85,6 +103,13 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
         Route::post('/departemen/edit', [DepartemenController::class, 'edit']);
         Route::post('/departemen/{kode_dept}/update', [DepartemenController::class, 'update']);
         Route::post('/departemen/{kode_dept}/delete', [DepartemenController::class, 'delete']);
+
+        // Data Pengelola Sistem (Users)
+        Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
+        Route::post('/users/store', [\App\Http\Controllers\UserController::class, 'store']);
+        Route::post('/users/edit', [\App\Http\Controllers\UserController::class, 'edit']);
+        Route::post('/users/{id}/update', [\App\Http\Controllers\UserController::class, 'update']);
+        Route::post('/users/{id}/delete', [\App\Http\Controllers\UserController::class, 'delete']);
     });
 
     // --------------------------------------------------------
@@ -97,6 +122,8 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
 
         // Atur Jadwal Kerja
         Route::get('/petugas/jadwal', [PetugasController::class, 'jadwal']);
+        Route::post('/petugas/jadwal', [PetugasController::class, 'storeJadwal']);
+        Route::post('/petugas/dinasluar', [PetugasController::class, 'setDinasLuar']);
 
         // Verifikasi Cuti / Izin
         Route::get('/petugas/verifikasi-cuti', [PetugasController::class, 'verifikasiCuti']);
@@ -109,10 +136,20 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
     });
 
     // --------------------------------------------------------
-    // HAK AKSES LURAH & PETUGAS (Melihat Laporan)
+    // HAK AKSES LURAH, PETUGAS & ADMIN (Melihat Laporan)
     // --------------------------------------------------------
-    Route::middleware(['role:lurah,petugas'])->group(function () {
-        // (Nanti route laporan presensi, cuti, dll kita tambahkan di sini)
+    Route::middleware(['role:lurah,petugas,admin'])->group(function () {
+        Route::get('/panel/laporan/presensi', [\App\Http\Controllers\LaporanController::class, 'presensi']);
+        Route::post('/panel/laporan/presensi/cetak', [\App\Http\Controllers\LaporanController::class, 'cetakPresensi']);
+
+        Route::get('/panel/laporan/kinerja', [\App\Http\Controllers\LaporanController::class, 'kinerja']);
+        Route::post('/panel/laporan/kinerja/cetak', [\App\Http\Controllers\LaporanController::class, 'cetakKinerja']);
+
+        Route::get('/panel/laporan/cuti', [\App\Http\Controllers\LaporanController::class, 'cuti']);
+        Route::post('/panel/laporan/cuti/cetak', [\App\Http\Controllers\LaporanController::class, 'cetakCuti']);
+
+        Route::get('/panel/laporan/pegawai', [\App\Http\Controllers\LaporanController::class, 'pegawai']);
+        Route::post('/panel/laporan/pegawai/cetak', [\App\Http\Controllers\LaporanController::class, 'cetakPegawai']);
     });
 
 });

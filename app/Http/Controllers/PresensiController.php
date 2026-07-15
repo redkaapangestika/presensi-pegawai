@@ -21,7 +21,11 @@ class PresensiController extends Controller
             ->where('tgl_presensi', $hariini)
             ->where('id_pegawai', $id_pegawai)
             ->count();
-        return view('presensi.create', compact('cek'));
+
+        $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+        $is_dinas_luar = $pegawai->is_dinas_luar ?? 0;
+
+        return view('presensi.create', compact('cek', 'is_dinas_luar'));
     }
 
     public function store(Request $request)
@@ -30,8 +34,18 @@ class PresensiController extends Controller
         $tgl_presensi = date('Y-m-d');
 
         $jam = Carbon::now('Asia/Jakarta')->format('H:i:s');
-        $latitudekantor = -7.778497430337909;
-        $longitudekantor = 110.40738509292642;
+        $konfigurasi = DB::table('konfigurasi_lokasi')->first();
+        if ($konfigurasi) {
+            $lokasi_kantor = explode(",", $konfigurasi->titik_koordinat);
+            $latitudekantor = $lokasi_kantor[0];
+            $longitudekantor = $lokasi_kantor[1];
+            $batas_radius = $konfigurasi->radius_meter;
+        } else {
+            $latitudekantor = -7.778497430337909;
+            $longitudekantor = 110.40738509292642;
+            $batas_radius = 100;
+        }
+
         $lokasi = $request->lokasi;
         $lokasiuser = explode(",", $lokasi);
         $latitudeuser = $lokasiuser[0];
@@ -56,8 +70,11 @@ class PresensiController extends Controller
         $path = "uploads/absensi/" . $fileName;
 
 
-        if ($jarak['meters'] > 100) {
-            echo "error|Anda berada diluar area kantor (" . $radius . " meter dari kantor). Silahkan lakukan absensi di dalam area kantor.|";
+        $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+        $is_dinas_luar = $pegawai->is_dinas_luar ?? 0;
+
+        if (!$is_dinas_luar && $jarak['meters'] > $batas_radius) {
+            echo "error|Anda berada diluar area kantor (" . $radius . " meter dari " . $batas_radius . " meter yang ditentukan). Silahkan lakukan absensi di dalam area kantor.|";
             return;
         }
         if ($cek > 0) {
@@ -67,10 +84,23 @@ class PresensiController extends Controller
                 'foto_out' => $fileName,
                 'lokasi_out' => $lokasi,
             ];
+
+            if ($request->has('log_kerja')) {
+                $data_pulang['log_kerja'] = $request->log_kerja;
+            }
+
+            if ($request->hasFile('berkas_log')) {
+                $berkas_log = $request->file('berkas_log');
+                $fileNameBerkas = $id_pegawai . '_' . $tgl_presensi . "_log_" . Carbon::now()->format('His') . '.' . $berkas_log->getClientOriginalExtension();
+                $berkas_log->storeAs('uploads/log_kerja', $fileNameBerkas, 'public');
+                $data_pulang['berkas_log'] = $fileNameBerkas;
+            }
+
             $update = DB::table('presensis')
                 ->where('tgl_presensi', $tgl_presensi)
                 ->where('id_pegawai', $id_pegawai)
                 ->update($data_pulang);
+
             if ($update) {
                 echo "success|Sampai Jumpa! Hati-hati di jalan|out";
                 Storage::disk('public')->put($path, $image_base64);
@@ -100,7 +130,7 @@ class PresensiController extends Controller
     function distance($lat1, $lon1, $lat2, $lon2)
     {
         $theta = $lon1 - $lon2;
-        $miles = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $miles = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
         $miles = acos($miles);
         $miles = rad2deg($miles);
         $miles = $miles * 60 * 1.1515;
@@ -180,6 +210,25 @@ class PresensiController extends Controller
         return view('presensi.gethistori', compact('histori'));
     }
 
+    public function cetaklaporan(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+
+        $namabulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+
+        $histori = DB::table('presensis')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereMonth('tgl_presensi', $bulan)
+            ->whereYear('tgl_presensi', $tahun)
+            ->orderBy('tgl_presensi', 'asc')
+            ->get();
+
+        return view('presensi.cetaklaporan', compact('bulan', 'tahun', 'namabulan', 'pegawai', 'histori'));
+    }
+
     public function izin()
     {
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
@@ -188,10 +237,52 @@ class PresensiController extends Controller
             ->get();
         return view('presensi.izin', compact('dataizin'));
     }
+
+    public function cetaklaporancuti(Request $request)
+    {
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+
+        $histori = DB::table('pengajuan_izin')
+            ->where('id_pegawai', $id_pegawai)
+            ->orderBy('tgl_izin', 'asc')
+            ->get();
+
+        $namabulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        return view('presensi.cetaklaporancuti', compact('pegawai', 'histori', 'namabulan'));
+    }
     public function buatizin()
     {
-        
-        return view('presensi.buatizin');
+        $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
+        $tahun_ini = date('Y');
+        $konfig = DB::table('konfigurasi_lokasi')->first();
+        $kuota_tahunan = $konfig->kuota_cuti_tahunan ?? 12;
+
+        $cuti_terpakai = DB::table('pengajuan_izin')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereYear('tgl_izin', $tahun_ini)
+            ->where('status_approved', '1') // Semua jenis yg disetujui mengurangi jatah? Atau minimal menghitung semua
+            ->count();
+
+        $sisa_cuti = $kuota_tahunan - $cuti_terpakai;
+
+        $kuorum = $konfig->kuorum_cuti_harian ?? 3;
+        $disabled_dates = DB::table('pengajuan_izin')
+            ->select('tgl_izin')
+            ->where('tgl_izin', '>=', date('Y-m-d'))
+            ->where('status_approved', '1') // Quorum hanya berlaku untuk yang disetujui (Approved)
+            ->groupBy('tgl_izin')
+            ->havingRaw('COUNT(DISTINCT id_pegawai) >= ?', [$kuorum])
+            ->pluck('tgl_izin')
+            ->toArray();
+
+        return view('presensi.buatizin', compact('sisa_cuti', 'kuota_tahunan', 'disabled_dates'));
+    }
+
+    public function lokasi()
+    {
+        return view('presensi.lokasi');
     }
 
     public function storeizin(Request $request)
@@ -199,44 +290,97 @@ class PresensiController extends Controller
 
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
         $tgl_izin = $request->tgl_izin;
+        $tgl_selesai_izin = $request->tgl_selesai_izin;
         $status = $request->status;
         $keterangan = $request->keterangan;
 
-        $data = [
-            'id_pegawai' => $id_pegawai,
-            'tgl_izin' => $tgl_izin,
-            'status' => $status,
-            'keterangan' => $keterangan,
-            'status_approved' => '0', // Pending
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
+        $simpan = false;
 
-        $simpan = DB::table('pengajuan_izin')->insert($data);
+        if (empty($tgl_selesai_izin)) {
+            $tgl_selesai_izin = $tgl_izin;
+        }
+
+        $start_date = Carbon::parse($tgl_izin);
+        $end_date = Carbon::parse($tgl_selesai_izin);
+
+        $konfig = DB::table('konfigurasi_lokasi')->first();
+        $kuorum_harian = $konfig->kuorum_cuti_harian ?? 3;
+        $kuota_tahunan = $konfig->kuota_cuti_tahunan ?? 12;
+
+        $tahun_ini = date('Y');
+        $cuti_terpakai = DB::table('pengajuan_izin')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereYear('tgl_izin', $tahun_ini)
+            ->where('status_approved', '1') // Semua pengajuan yang disetujui mengurangi sisa cuti Anda.
+            ->count();
+
+        $sisa_cuti = $kuota_tahunan - $cuti_terpakai;
+        $jumlah_hari = $start_date->diffInDays($end_date) + 1;
+
+        if ($jumlah_hari > $sisa_cuti) {
+            return redirect('/presensi/izin')->with('error', 'Sisa kuota cuti/izin Anda tidak mencukupi (Sisa: ' . $sisa_cuti . ' Hari).');
+        }
+
+        for ($date = $start_date; $date->lte($end_date); $date->addDay()) {
+            $tgl = $date->format('Y-m-d');
+
+            $existing_leaves = DB::table('pengajuan_izin')
+                ->where('tgl_izin', $tgl)
+                ->where('status_approved', '1') // Quorum cuti hanya berdasarkan yang Disetujui
+                ->distinct('id_pegawai')
+                ->count();
+
+            if ($existing_leaves >= $kuorum_harian) {
+                return redirect('/presensi/izin')
+                    ->with('error', 'Gagal: Kuorum pelayanan cuti untuk tanggal ' . date('d-m-Y', strtotime($tgl)) . ' sudah penuh (Maks. ' . $kuorum_harian . ' pegawai).');
+            }
+
+            $data = [
+                'id_pegawai' => $id_pegawai,
+                'tgl_izin' => $tgl,
+                'status' => $status,
+                'keterangan' => $keterangan,
+                'status_approved' => '0', // Pending
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            // Check if already exist to prevent duplicate
+            $cek = DB::table('pengajuan_izin')
+                ->where('id_pegawai', $id_pegawai)
+                ->where('tgl_izin', $tgl)
+                ->count();
+
+            if ($cek == 0) {
+                $simpan = DB::table('pengajuan_izin')->insert($data);
+            }
+        }
+
 
         if ($simpan) {
             return redirect('/presensi/izin')
-                ->with('success', 'Pengajuan izin berhasil dikirim.');
+                ->with('success', 'Pengajuan berhasil dikirim.');
         } else {
             return redirect('/presensi/izin')
-                ->with('error', 'Gagal mengirim pengajuan izin.');
+                ->with('error', 'Kuorum Penuh! Gagal mengirim pengajuan cuti pada tanggal tersebut.');
         }
     }
 
     public function monitoring()
     {
-        return view('presensi.monitoring');   
+        return view('presensi.monitoring');
     }
 
-    public function getpresensi(Request $request){
+    public function getpresensi(Request $request)
+    {
         $tanggal = $request->tanggal;
         $presensi = DB::table('presensis')
-        ->select('presensis.*','pegawais.nama_lengkap','departemens.nama_dept')
-        ->join('pegawais','presensis.id_pegawai','=','pegawais.id_pegawai')
-        ->join('departemens','pegawais.kode_dept','=','departemens.kode_dept')
-        ->where('tgl_presensi',$tanggal)
-        ->get();
+            ->select('presensis.*', 'pegawais.nama_lengkap', 'departemens.nama_dept')
+            ->join('pegawais', 'presensis.id_pegawai', '=', 'pegawais.id_pegawai')
+            ->join('departemens', 'pegawais.kode_dept', '=', 'departemens.kode_dept')
+            ->where('tgl_presensi', $tanggal)
+            ->get();
 
-        return view('presensi.getpresensi',compact('presensi'));
+        return view('presensi.getpresensi', compact('presensi'));
     }
 }

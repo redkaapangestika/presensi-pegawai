@@ -74,6 +74,9 @@
                                         <td>
                                             @if($p->jam_in)
                                                 <span class="badge bg-green-lt">{{ $p->jam_in }}</span>
+                                                @if($p->jam_in > '08:00:00')
+                                                    <span class="badge bg-danger ms-1">Terlambat</span>
+                                                @endif
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
@@ -97,24 +100,33 @@
                                         </td>
                                         <td>
                                             <div class="btn-group">
-                                                <form method="POST" action="/petugas/validasi-presensi/update" class="d-inline">
+                                                <form method="POST" action="/petugas/validasi-presensi/update"
+                                                    id="form-valid-{{ $p->id_presensi }}" class="d-inline">
                                                     @csrf
-                                                    <input type="hidden" name="id" value="{{ $p->id }}">
+                                                    <input type="hidden" name="id" value="{{ $p->id_presensi }}">
                                                     <input type="hidden" name="status_validasi" value="valid">
-                                                    <button type="submit" class="btn btn-sm btn-success"
-                                                        onclick="return confirm('Tandai sebagai VALID?')">
-                                                        ✓ Valid
-                                                    </button>
+                                                    @if($sv == 'valid')
+                                                        <button type="button" class="btn btn-sm btn-success disabled" disabled>✓ Tervalidasi</button>
+                                                    @else
+                                                        <button type="button" class="btn btn-sm btn-outline-success"
+                                                            onclick="confirmValidation('form-valid-{{ $p->id_presensi }}', true)">
+                                                            ✓ Valid
+                                                        </button>
+                                                    @endif
                                                 </form>
                                                 <form method="POST" action="/petugas/validasi-presensi/update"
-                                                    class="d-inline ms-1">
+                                                    id="form-invalid-{{ $p->id_presensi }}" class="d-inline ms-1">
                                                     @csrf
-                                                    <input type="hidden" name="id" value="{{ $p->id }}">
+                                                    <input type="hidden" name="id" value="{{ $p->id_presensi }}">
                                                     <input type="hidden" name="status_validasi" value="invalid">
-                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Tandai sebagai TIDAK VALID?')">
-                                                        ✕ Tidak Valid
-                                                    </button>
+                                                    @if($sv == 'invalid')
+                                                        <button type="button" class="btn btn-sm btn-danger disabled" disabled>✕ Ditolak</button>
+                                                    @else
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                            onclick="confirmValidation('form-invalid-{{ $p->id_presensi }}', false)">
+                                                            ✕ Tidak Valid
+                                                        </button>
+                                                    @endif
                                                 </form>
                                             </div>
                                         </td>
@@ -138,6 +150,31 @@
 
 @push('myscript')
     <script>
+        function confirmValidation(formId, isApprove) {
+            let title = isApprove ? 'Validasi Kehadiran?' : 'Tolak Kehadiran?';
+            let text = isApprove ? 'Tandai presensi ini sebagai VALID.' : 'Tandai presensi ini sebagai TIDAK VALID.';
+            let confirmButtonColor = isApprove ? '#28a745' : '#d33';
+            let confirmButtonText = isApprove ? 'Ya, Valid!' : 'Ya, Tidak Valid!';
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: confirmButtonText,
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: isApprove ? 'btn btn-success me-2' : 'btn btn-danger me-2',
+                    cancelButton: 'btn btn-secondary'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
         $(function () {
             $("#tanggal").datepicker({
                 autoclose: true,

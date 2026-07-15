@@ -95,22 +95,23 @@
                                         <td>
                                             @if($p->status_approved == '0')
                                                 <div class="btn-group">
-                                                    <form method="POST" action="/petugas/verifikasi-cuti/update" class="d-inline">
+                                                    <form id="form-approve-{{ $p->id }}" method="POST"
+                                                        action="/petugas/verifikasi-cuti/update" class="d-inline">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $p->id }}">
                                                         <input type="hidden" name="status_approved" value="1">
-                                                        <button type="submit" class="btn btn-sm btn-success"
-                                                            onclick="return confirm('Setujui pengajuan ini?')">
+                                                        <button type="button" class="btn btn-sm btn-success"
+                                                            onclick="confirmAlertLocal('form-approve-{{ $p->id }}', 'Setujui pengajuan ini?', 'info', 'Ya, Setujui')">
                                                             ✓ Setujui
                                                         </button>
                                                     </form>
-                                                    <form method="POST" action="/petugas/verifikasi-cuti/update"
-                                                        class="d-inline ms-1">
+                                                    <form id="form-reject-{{ $p->id }}" method="POST"
+                                                        action="/petugas/verifikasi-cuti/update" class="d-inline ms-1">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $p->id }}">
                                                         <input type="hidden" name="status_approved" value="2">
-                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                            onclick="return confirm('Tolak pengajuan ini?')">
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="confirmAlertLocal('form-reject-{{ $p->id }}', 'Tolak pengajuan ini?', 'warning', 'Ya, Tolak')">
                                                             ✕ Tolak
                                                         </button>
                                                     </form>
@@ -136,3 +137,24 @@
         </div>
     </div>
 @endsection
+
+@push('myscript')
+    <script>
+        function confirmAlertLocal(formId, message, iconType, confirmText) {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: iconType,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+    </script>
+@endpush

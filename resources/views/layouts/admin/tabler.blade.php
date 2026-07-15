@@ -46,7 +46,6 @@
         @include('layouts.admin.header')
         <div class="page-wrapper">
             @yield('content')
-            @include('layouts.admin.footer')
         </div>
     </div>
 
