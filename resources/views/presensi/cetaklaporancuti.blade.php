@@ -116,7 +116,7 @@
     <button onclick="window.print()" class="btn-print no-print">Cetak PDF / Print</button>
 
     <div class="header">
-        <h3>Laporan Riwayat Cuti dan Izin Pagawai</h3>
+        <h3>Laporan Riwayat Cuti dan Izin Pegawai</h3>
         <p>Kalurahan Condongcatur, Kecamatan Depok, Kabupaten Sleman</p>
     </div>
 

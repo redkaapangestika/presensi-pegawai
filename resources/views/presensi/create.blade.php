@@ -152,16 +152,45 @@
 
         @if ($cek > 0)
             <!-- Muncul Saat Pulang -->
-            <div class="log-kerja-card">
-                <label>Log Kerja</label>
-                <textarea id="log_kerja" rows="3" class="log-kerja-input mb-3"
-                    placeholder="Tuliskan ringkasan kegiatan pekerjaan hari ini (Wajib)..."></textarea>
+            @if(isset($hasTask) && $hasTask)
+                <div class="log-kerja-card">
+                    <label class="fw-bold text-dark">Target Pekerjaan Dari Petugas</label>
+                    <div
+                        style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #334155; white-space: pre-wrap; font-size: 14px; border: 1px solid #cbd5e1;">
+                        {{ $isiLogKerja }}</div>
 
-                <label>Berkas/File Bukti (Wajib)</label>
-                <input type="file" id="berkas_log" name="berkas_log" class="form-control"
-                    style="background:#f9fafb; border: 1px solid #e5e7eb; border-radius:12px; padding:8px 15px;">
-                <small class="text-muted d-block mt-1">Format: PDF, JPG, PNG (Max: 2MB)</small>
-            </div>
+                    <div class="mb-3 d-flex align-items-start" style="gap: 10px;">
+                        <input type="checkbox" id="tugas_selesai" value="1"
+                            style="width: 20px; height: 20px; flex-shrink: 0; margin: 0; position: static; cursor: pointer;">
+                        <label class="text-dark fw-medium" for="tugas_selesai"
+                            style="font-size: 13.5px; line-height: 1.4; cursor: pointer;">
+                            Saya mengonfirmasi tugas di atas telah dikerjakan.
+                        </label>
+                    </div>
+
+                    <label class="fw-bold text-dark">Catatan Tambahan (Opsional)</label>
+                    <textarea id="log_kerja" rows="2" class="log-kerja-input mb-3"
+                        placeholder="Tambahkan keterangan lain jika diperlukan..."></textarea>
+
+                    <label>Berkas/File Bukti (Wajib)</label>
+                    <input type="file" id="berkas_log" name="berkas_log" class="form-control"
+                        style="background:#f9fafb; border: 1px solid #e5e7eb; border-radius:12px; padding:8px 15px;">
+                    <small class="text-muted d-block mt-1">Format: PDF, JPG, PNG (Max: 2MB)</small>
+                </div>
+            @else
+                <!-- Form Harian Biasa untuk Pegawai yang tidak ditambahkan target oleh Petugas -->
+                <div class="log-kerja-card">
+                    <label class="fw-bold text-dark">Log Kerja Harian (Wajib)</label>
+                    <textarea id="log_kerja" rows="3" class="log-kerja-input mb-3"
+                        placeholder="Tuliskan ringkasan kegiatan dan bukti pekerjaan Anda hari ini secara detail..."></textarea>
+
+                    <label class="fw-bold text-dark">Berkas/File Bukti Kegiatan (Wajib)</label>
+                    <input type="file" id="berkas_log" name="berkas_log" class="form-control"
+                        style="background:#f9fafb; border: 1px solid #e5e7eb; border-radius:12px; padding:8px 15px;">
+                    <small class="text-muted d-block mt-1">Format: PDF, JPG, PNG (Max: 2MB)</small>
+                </div>
+            @endif
+
 
             <button type="button" id="takeabsen" class="btn-absen btn-out">
                 <ion-icon name="camera" style="font-size: 24px;"></ion-icon>
@@ -238,14 +267,24 @@
             formData.append('_token', "{{ csrf_token() }}");
 
             // Validasi Log Kerja jika elemen ada (hanya saat Clock Out)
-            if ($("#log_kerja").length) {
-                var log_kerja = $("#log_kerja").val().trim();
-                var berkas_log = $('#berkas_log')[0].files[0];
-
-                if (log_kerja == "") {
+            if ($("#berkas_log").length) {
+                if ($("#tugas_selesai").length > 0 && !$("#tugas_selesai").is(":checked")) {
                     Swal.fire({
                         title: 'Oops!',
-                        text: 'Silahkan isikan ringkasan kegiatan pekerjaan hari ini.',
+                        text: 'Silahkan centang kotak konfirmasi penyelesaian tugas Anda terlebih dahulu.',
+                        icon: 'warning'
+                    });
+                    return false;
+                }
+
+                var log_kerja = $("#log_kerja").val() ? $("#log_kerja").val().trim() : "";
+                var berkas_log = $('#berkas_log')[0].files[0];
+
+                // Wajib diisi Jika textarea muncul tapi tugas_selesai tidak ada (Artinya mode normal)
+                if ($("#tugas_selesai").length === 0 && log_kerja === "") {
+                    Swal.fire({
+                        title: 'Oops!',
+                        text: 'Silahkan isikan ringkasan kegiatan pekerjaan Anda hari ini.',
                         icon: 'warning'
                     });
                     return false;
@@ -254,7 +293,7 @@
                 if (!berkas_log) {
                     Swal.fire({
                         title: 'Oops!',
-                        text: 'Silahkan upload berkas/file bukti kerja Anda.',
+                        text: 'Silahkan upload berkas/file bukti kerja Anda terlebih dahulu.',
                         icon: 'warning'
                     });
                     return false;

@@ -180,14 +180,25 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-check form-switch cursor-pointer">
-                                <input class="form-check-input my-auto" type="checkbox" id="modal_is_dinas_luar" name="is_dinas_luar" style="width: 2.5em; height: 1.25em;">
+                                <input class="form-check-input my-auto" type="checkbox" id="modal_is_dinas_luar"
+                                    name="is_dinas_luar" style="width: 2.5em; height: 1.25em;">
                                 <span class="form-check-label ms-2 h3">Aktifkan Status Dinas Luar</span>
                             </label>
-                            <small class="text-muted">Jika diaktifkan, pegawai dapat melakukan presensi tanpa batasan radius kantor pusat.</small>
+                            <small class="text-muted">Jika diaktifkan, pegawai dapat melakukan presensi tanpa batasan radius
+                                kantor pusat.</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Info Lokasi Penugasan (Opsional)</label>
-                            <textarea class="form-control" rows="2" id="modal_lokasi_dinas" name="lokasi_dinas" placeholder="Cth: Diklat di Balai Kota..."></textarea>
+                            <select id="modal_lokasi_dinas" name="lokasi_dinas" class="form-select"
+                                placeholder="Cari / Ketik nama lokasi..." autocomplete="off">
+                                <option value="">Pilih atau ketik lokasi baru...</option>
+                                <option value="Balai Kota">Balai Kota</option>
+                                <option value="Kapanewon Depok">Kapanewon Depok</option>
+                                <option value="Puskesmas">Puskesmas</option>
+                                <option value="Polsek Depok">Polsek Depok</option>
+                                <option value="Dinas Kabupaten Sleman">Dinas Kabupaten Sleman</option>
+                                <option value="Dinas Provinsi DIY">Dinas Provinsi DIY</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -202,7 +213,22 @@
 @endsection
 
 @push('myscript')
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var el = document.getElementById('modal_lokasi_dinas');
+            if(el) {
+                window.tsLokasi = new TomSelect(el, {
+                    create: true,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    }
+                });
+            }
+        });
+
         function editJadwal(hari, jam_masuk, jam_pulang) {
             document.getElementById('modal_hari').value = hari;
             document.getElementById('modal_jam_masuk').value = jam_masuk;
@@ -215,7 +241,19 @@
             document.getElementById('modal_id_pegawai').value = id;
             document.getElementById('modal_nama_pegawai').value = nama;
             document.getElementById('modal_is_dinas_luar').checked = is_dinas == 1 ? true : false;
-            document.getElementById('modal_lokasi_dinas').value = lokasi || '';
+            
+            // Update TomSelect value logically if initialized
+            if (window.tsLokasi) {
+                if(lokasi) {
+                     window.tsLokasi.addOption({value: lokasi, text: lokasi});
+                     window.tsLokasi.setValue(lokasi);
+                } else {
+                     window.tsLokasi.clear();
+                }
+            } else {
+                document.getElementById('modal_lokasi_dinas').value = lokasi || '';
+            }
+
             var modal = new bootstrap.Modal(document.getElementById('modalDinasLuar'));
             modal.show();
         }

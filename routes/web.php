@@ -133,6 +133,13 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
         Route::get('/petugas/validasi-presensi', [PetugasController::class, 'validasiPresensi']);
         Route::post('/petugas/validasi-presensi/update', [PetugasController::class, 'updateValidasi']);
         Route::post('/getpresensi-validasi', [PetugasController::class, 'getpresensiValidasi']);
+        // Kelola Data Kerja Harian (Log Kinerja)
+        Route::get('/petugas/log-kerja', [PetugasController::class, 'logKerja']);
+        Route::post('/petugas/log-kerja/store', [PetugasController::class, 'storeLogKerja']);
+        Route::post('/petugas/log-kerja/update', [PetugasController::class, 'updateLogKerja']);
+        Route::post('/petugas/log-kerja/delete', [PetugasController::class, 'deleteLogKerja']);
+        Route::post('/petugas/log-kerja/acc', [PetugasController::class, 'accLogKerja']);
+        Route::post('/getlogkerja', [PetugasController::class, 'getLogKerja']);
     });
 
     // --------------------------------------------------------

@@ -14,7 +14,7 @@ class PegawaiController extends Controller
         $query = Pegawai::query();
         $query->select('pegawais.*', 'nama_dept');
         $query->join('departemens', 'pegawais.kode_dept', '=', 'departemens.kode_dept');
-        $query->orderBy('nama_lengkap');
+        $query->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf') = 0")->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf')")->orderBy('pegawais.nama_lengkap');
         if (!empty($request->nama_pegawai)) {
             $query->where('nama_lengkap', 'like', '%' . $request->nama_pegawai . '%');
         }
@@ -37,6 +37,12 @@ class PegawaiController extends Controller
         $no_hp = $request->no_hp;
         $kode_dept = $request->kode_dept;
         $password = Hash::make('12345');
+
+        // Check for duplicate ID Pegawai
+        $cek = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->count();
+        if ($cek > 0) {
+            return redirect()->back()->with('warning', 'Data Gagal Disimpan, ID Pegawai sudah digunakan oleh Pegawai lain.');
+        }
 
         if ($request->hasFile('foto')) {
             $foto = $id_pegawai . "." . $request->file('foto')->getClientOriginalExtension();
@@ -65,8 +71,11 @@ class PegawaiController extends Controller
                 return redirect()->back()->with('error', 'Gagal menyimpan data pegawai.');
             }
         } catch (\Exception $e) {
-            dd($e);
-            //return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data pegawai.');
+            // Check if error is due to duplicate entry (Integrity constraint violation)
+            if ($e->getCode() == 23000) {
+                return redirect()->back()->with('warning', 'Data Gagal Disimpan, ID Pegawai sudah digunakan oleh Pegawai lain.');
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data pegawai.');
         }
     }
 

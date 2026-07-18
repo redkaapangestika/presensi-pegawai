@@ -121,6 +121,20 @@
             </div>
         @endif
 
+        <!-- Sisa Cuti Card -->
+        <div
+            style="background: white; border-radius: 15px; padding: 15px 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e5e7eb;">
+            <div>
+                <div style="font-size: 0.85rem; color: #6b7280; font-weight: 600;">Sisa Kuota Cuti Tahunan</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: #0ea5e9;">{{ $sisa_cuti }} <span
+                        style="font-size: 0.9rem; color:#6b7280; font-weight: 600;">Hari</span></div>
+            </div>
+            <div
+                style="background: #e0f2fe; color: #0ea5e9; padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <ion-icon name="calendar-clear" style="font-size: 26px;"></ion-icon>
+            </div>
+        </div>
+
         @if ($dataizin->isEmpty())
             <div class="alert alert-warning text-center" style="border-radius:15px; margin-top:20px;">
                 <p class="mb-0">Belum ada riwayat cuti / izin.</p>

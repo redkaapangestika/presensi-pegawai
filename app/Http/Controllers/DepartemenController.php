@@ -11,14 +11,16 @@ class DepartemenController extends Controller
     {
         $nama_dept = $request->nama_dept;
         $query = DB::table('departemens');
-        if(!empty($nama_dept)){
-            $query->where('nama_dept','like','%'.$nama_dept.'%');
+        if (!empty($nama_dept)) {
+            $query->where('nama_dept', 'like', '%' . $nama_dept . '%');
         }
+        $query->orderByRaw("FIELD(departemens.nama_dept, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf') = 0")->orderByRaw("FIELD(departemens.nama_dept, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf')")->orderBy('departemens.nama_dept');
         $departemen = $query->get();
-        return view('departemen.index',compact('departemen'));
+        return view('departemen.index', compact('departemen'));
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $kode_dept = $request->kode_dept;
         $nama_dept = $request->nama_dept;
         $data = [
@@ -27,9 +29,9 @@ class DepartemenController extends Controller
         ];
 
         $simpan = DB::table('departemens')->insert($data);
-        if($simpan){
+        if ($simpan) {
             return redirect()->back()->with('success', 'Data Berhasil Disimpan');
-        }else{
+        } else {
             return redirect()->back()->with('warning', 'Data Gagal Disimpan');
         }
     }
@@ -37,30 +39,31 @@ class DepartemenController extends Controller
     public function edit(Request $request)
     {
         $kode_dept = $request->kode_dept;
-        $departemen = DB::table('departemens')->where('kode_dept',$kode_dept)->first();
+        $departemen = DB::table('departemens')->where('kode_dept', $kode_dept)->first();
         return view('departemen.edit', compact('departemen'));
     }
 
-    public function update($kode_dept,Request $request)
+    public function update($kode_dept, Request $request)
     {
         $nama_dept = $request->nama_dept;
         $data = [
             'nama_dept' => $nama_dept
         ];
 
-        $update = DB::table('departemens')->where('kode_dept',$kode_dept)->update($data);
-        if($update){
+        $update = DB::table('departemens')->where('kode_dept', $kode_dept)->update($data);
+        if ($update) {
             return redirect()->back()->with('success', 'Data Berhasil Diupdate');
-        } else{
+        } else {
             return redirect()->back()->with('warning', 'Data Gagal Diupdate');
         }
     }
 
-    public function delete($kode_dept){
-        $hapus = DB::table('departemens')->where('kode_dept',$kode_dept)->delete();
-        if($hapus){
+    public function delete($kode_dept)
+    {
+        $hapus = DB::table('departemens')->where('kode_dept', $kode_dept)->delete();
+        if ($hapus) {
             return redirect()->back()->with('success', 'Data Berhasil Dihapus');
-        } else{
+        } else {
             return redirect()->back()->with('warning', 'Data Gagal Dihapus');
         }
     }

@@ -68,7 +68,7 @@
 
     <div style="margin-bottom: 10px;">
         @if($pegawai)
-            <strong>ID / NIK Pegawai:</strong> {{ $pegawai->id_pegawai }}<br>
+            <strong>ID Pegawai:</strong> {{ $pegawai->id_pegawai }}<br>
             <strong>Nama Lengkap:</strong> {{ $pegawai->nama_lengkap }}<br>
             <strong>Jabatan:</strong> {{ $pegawai->jabatan }}
         @else

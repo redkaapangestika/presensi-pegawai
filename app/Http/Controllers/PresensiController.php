@@ -17,15 +17,21 @@ class PresensiController extends Controller
     {
         $hariini = date('Y-m-d');
         $id_pegawai = Auth::guard('pegawai')->user()->id_pegawai;
-        $cek = DB::table('presensis')
+        $cekPresensi = DB::table('presensis')
             ->where('tgl_presensi', $hariini)
             ->where('id_pegawai', $id_pegawai)
-            ->count();
+            ->first();
+
+        $cek = $cekPresensi && $cekPresensi->jam_in ? 1 : 0;
+
+        // Check if officer gave a mandatory task (so we can pass to view if we want)
+        $hasTask = $cekPresensi && !empty($cekPresensi->log_kerja);
+        $isiLogKerja = $hasTask ? $cekPresensi->log_kerja : '';
 
         $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
         $is_dinas_luar = $pegawai->is_dinas_luar ?? 0;
 
-        return view('presensi.create', compact('cek', 'is_dinas_luar'));
+        return view('presensi.create', compact('cek', 'is_dinas_luar', 'hasTask', 'isiLogKerja'));
     }
 
     public function store(Request $request)
@@ -57,6 +63,7 @@ class PresensiController extends Controller
         $cek = DB::table('presensis')
             ->where('tgl_presensi', $tgl_presensi)
             ->where('id_pegawai', $id_pegawai)
+            ->whereNotNull('jam_in')
             ->count();
         if ($cek > 0) {
             $ket = 'out';
@@ -79,14 +86,35 @@ class PresensiController extends Controller
         }
         if ($cek > 0) {
             // CLOCK OUT
+
+            // Validasi jika ditugaskan oleh petugas (must finish task)
+            $cekTask = DB::table('presensis')
+                ->where('tgl_presensi', $tgl_presensi)
+                ->where('id_pegawai', $id_pegawai)
+                ->first();
+
+            if ($cekTask && !empty($cekTask->log_kerja)) {
+                // Must have uploaded file
+                if (!$request->hasFile('berkas_log')) {
+                    echo "error|Anda memiliki target log kerja hari ini. Harap upload Berkas Bukti penyelesaian sebelum Absen Pulang.|out";
+                    return;
+                }
+            }
+
             $data_pulang = [
                 'jam_out' => $jam,
                 'foto_out' => $fileName,
                 'lokasi_out' => $lokasi,
             ];
 
-            if ($request->has('log_kerja')) {
-                $data_pulang['log_kerja'] = $request->log_kerja;
+            if ($cekTask && !empty($cekTask->log_kerja)) {
+                if ($request->has('log_kerja') && !empty($request->log_kerja)) {
+                    $data_pulang['log_kerja'] = "[TUGAS PETUGAS]:\n" . $cekTask->log_kerja . "\n\n[CATATAN PEGAWAI]:\n" . $request->log_kerja;
+                }
+            } else {
+                if ($request->has('log_kerja') && !empty($request->log_kerja)) {
+                    $data_pulang['log_kerja'] = $request->log_kerja;
+                }
             }
 
             if ($request->hasFile('berkas_log')) {
@@ -116,7 +144,24 @@ class PresensiController extends Controller
                 'foto_in' => $fileName,
                 'lokasi_in' => $lokasi,
             ];
-            $simpan = DB::table('presensis')->insert($data);
+
+            // Check if record exists (maybe officer assigned a task beforehand)
+            $existingPresensi = DB::table('presensis')
+                ->where('id_pegawai', $id_pegawai)
+                ->where('tgl_presensi', $tgl_presensi)
+                ->first();
+
+            if ($existingPresensi) {
+                $simpan = DB::table('presensis')
+                    ->where('id_presensi', $existingPresensi->id_presensi)
+                    ->update([
+                        'jam_in' => $jam,
+                        'foto_in' => $fileName,
+                        'lokasi_in' => $lokasi,
+                    ]);
+            } else {
+                $simpan = DB::table('presensis')->insert($data);
+            }
             if ($simpan) {
                 echo "success| Selamat Bekerja! Semoga harimu menyenangkan|in";
                 Storage::disk('public')->put($path, $image_base64);
@@ -235,7 +280,20 @@ class PresensiController extends Controller
         $dataizin = DB::table('pengajuan_izin')
             ->where('id_pegawai', $id_pegawai)
             ->get();
-        return view('presensi.izin', compact('dataizin'));
+
+        $tahun_ini = date('Y');
+        $konfig = DB::table('konfigurasi_lokasi')->first();
+        $kuota_tahunan = $konfig->kuota_cuti_tahunan ?? 12;
+
+        $cuti_terpakai = DB::table('pengajuan_izin')
+            ->where('id_pegawai', $id_pegawai)
+            ->whereYear('tgl_izin', $tahun_ini)
+            ->where('status_approved', '1') // Semua jenis yg disetujui mengurangi jatah? Atau minimal menghitung semua
+            ->count();
+
+        $sisa_cuti = $kuota_tahunan - $cuti_terpakai;
+
+        return view('presensi.izin', compact('dataizin', 'sisa_cuti'));
     }
 
     public function cetaklaporancuti(Request $request)
