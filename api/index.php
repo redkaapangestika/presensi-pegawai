@@ -2,6 +2,9 @@
 
 // Vercel Serverless Entrypoint (Laravel 11)
 
+// Panggil package core Laravel (Autoloader) wajib sebelum memanggil instanta Bootstrap
+require __DIR__ . '/../vendor/autoload.php';
+
 $app = require __DIR__ . '/../bootstrap/app.php';
 
 // Memaksa seluruh operasi Storage (Log, View Caches, Sessions) ke direktori /tmp
