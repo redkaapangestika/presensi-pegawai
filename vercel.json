@@ -25,7 +25,7 @@
         "APP_DEBUG": "false",
         "LOG_CHANNEL": "stderr",
         "CACHE_DRIVER": "array",
-        "SESSION_DRIVER": "database",
+        "SESSION_DRIVER": "cookie",
         "QUEUE_CONNECTION": "sync",
         "VIEW_COMPILED_PATH": "/tmp",
         "APP_SERVICES_CACHE": "/tmp/services.php",
