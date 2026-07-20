@@ -27,8 +27,8 @@ class LaporanController extends Controller
             $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
             $presensi = DB::table('presensis')
                 ->where('id_pegawai', $id_pegawai)
-                ->whereRaw('MONTH(tgl_presensi)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_presensi)="' . $tahun . '"')
+                ->whereMonth('tgl_presensi', $bulan)
+                ->whereYear('tgl_presensi', $tahun)
                 ->orderBy('tgl_presensi')
                 ->get();
         } else {
@@ -36,8 +36,8 @@ class LaporanController extends Controller
             $presensi = DB::table('presensis')
                 ->join('pegawais', 'presensis.id_pegawai', '=', 'pegawais.id_pegawai')
                 ->select('presensis.*', 'pegawais.nama_lengkap', 'pegawais.jabatan')
-                ->whereRaw('MONTH(tgl_presensi)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_presensi)="' . $tahun . '"')
+                ->whereMonth('tgl_presensi', $bulan)
+                ->whereYear('tgl_presensi', $tahun)
                 ->orderBy('pegawais.nama_lengkap')
                 ->orderBy('tgl_presensi')
                 ->get();
@@ -66,8 +66,8 @@ class LaporanController extends Controller
                 ->where('id_pegawai', $id_pegawai)
                 ->whereNotNull('log_kerja')
                 ->where('status_acc_log', 1)
-                ->whereRaw('MONTH(tgl_presensi)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_presensi)="' . $tahun . '"')
+                ->whereMonth('tgl_presensi', $bulan)
+                ->whereYear('tgl_presensi', $tahun)
                 ->orderBy('tgl_presensi')
                 ->get();
         } else {
@@ -77,8 +77,8 @@ class LaporanController extends Controller
                 ->select('presensis.*', 'pegawais.nama_lengkap', 'pegawais.jabatan')
                 ->whereNotNull('log_kerja')
                 ->where('status_acc_log', 1)
-                ->whereRaw('MONTH(tgl_presensi)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_presensi)="' . $tahun . '"')
+                ->whereMonth('tgl_presensi', $bulan)
+                ->whereYear('tgl_presensi', $tahun)
                 ->orderBy('pegawais.nama_lengkap')
                 ->orderBy('tgl_presensi')
                 ->get();
@@ -105,8 +105,8 @@ class LaporanController extends Controller
             $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
             $cuti = DB::table('pengajuan_izin')
                 ->where('id_pegawai', $id_pegawai)
-                ->whereRaw('MONTH(tgl_izin)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_izin)="' . $tahun . '"')
+                ->whereMonth('tgl_izin', $bulan)
+                ->whereYear('tgl_izin', $tahun)
                 ->orderBy('tgl_izin')
                 ->get();
         } else {
@@ -114,8 +114,8 @@ class LaporanController extends Controller
             $cuti = DB::table('pengajuan_izin')
                 ->join('pegawais', 'pengajuan_izin.id_pegawai', '=', 'pegawais.id_pegawai')
                 ->select('pengajuan_izin.*', 'pegawais.nama_lengkap')
-                ->whereRaw('MONTH(tgl_izin)="' . $bulan . '"')
-                ->whereRaw('YEAR(tgl_izin)="' . $tahun . '"')
+                ->whereMonth('tgl_izin', $bulan)
+                ->whereYear('tgl_izin', $tahun)
                 ->orderBy('pegawais.nama_lengkap')
                 ->orderBy('tgl_izin')
                 ->get();
@@ -144,7 +144,28 @@ class LaporanController extends Controller
             $departemen = null;
         }
 
-        $pegawai = $query->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf') = 0")->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf')")->orderBy('pegawais.nama_lengkap')->get();
+        $jabatanOrder = "CASE pegawais.jabatan
+            WHEN 'Lurah' THEN 1
+            WHEN 'Carik' THEN 2
+            WHEN 'Jagabaya' THEN 3
+            WHEN 'Ulu-Ulu' THEN 4
+            WHEN 'Kamituwa' THEN 5
+            WHEN 'Kepala Urusan Danarta' THEN 6
+            WHEN 'Kaur Danarta' THEN 7
+            WHEN 'Kepala Urusan Pangripta' THEN 8
+            WHEN 'Kaur Pangripta' THEN 9
+            WHEN 'Kepala Urusan Tata Laksana' THEN 10
+            WHEN 'Kaur Tata Laksana' THEN 11
+            WHEN 'Kaur' THEN 12
+            WHEN 'Staf Carik' THEN 13
+            WHEN 'Staf Jagabaya' THEN 14
+            WHEN 'Staf Ulu-Ulu' THEN 15
+            WHEN 'Staf Kamituwa' THEN 16
+            WHEN 'Staf Danarta' THEN 17
+            WHEN 'Staf Tata Laksana' THEN 18
+            WHEN 'Staf' THEN 19
+            ELSE 99 END";
+        $pegawai = $query->orderByRaw($jabatanOrder)->orderBy('pegawais.nama_lengkap')->get();
 
         return view('laporan.cetak_pegawai', compact('pegawai', 'departemen', 'kode_dept'));
     }

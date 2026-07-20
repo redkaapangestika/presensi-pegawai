@@ -14,7 +14,17 @@ class PegawaiController extends Controller
         $query = Pegawai::query();
         $query->select('pegawais.*', 'nama_dept');
         $query->join('departemens', 'pegawais.kode_dept', '=', 'departemens.kode_dept');
-        $query->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf') = 0")->orderByRaw("FIELD(pegawais.jabatan, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf')")->orderBy('pegawais.nama_lengkap');
+        $jabatanOrder = "CASE pegawais.jabatan
+            WHEN 'Lurah' THEN 1 WHEN 'Carik' THEN 2 WHEN 'Jagabaya' THEN 3
+            WHEN 'Ulu-Ulu' THEN 4 WHEN 'Kamituwa' THEN 5
+            WHEN 'Kepala Urusan Danarta' THEN 6 WHEN 'Kaur Danarta' THEN 7
+            WHEN 'Kepala Urusan Pangripta' THEN 8 WHEN 'Kaur Pangripta' THEN 9
+            WHEN 'Kepala Urusan Tata Laksana' THEN 10 WHEN 'Kaur Tata Laksana' THEN 11
+            WHEN 'Kaur' THEN 12 WHEN 'Staf Carik' THEN 13 WHEN 'Staf Jagabaya' THEN 14
+            WHEN 'Staf Ulu-Ulu' THEN 15 WHEN 'Staf Kamituwa' THEN 16
+            WHEN 'Staf Danarta' THEN 17 WHEN 'Staf Tata Laksana' THEN 18
+            WHEN 'Staf' THEN 19 ELSE 99 END";
+        $query->orderByRaw($jabatanOrder)->orderBy('pegawais.nama_lengkap');
         if (!empty($request->nama_pegawai)) {
             $query->where('nama_lengkap', 'like', '%' . $request->nama_pegawai . '%');
         }

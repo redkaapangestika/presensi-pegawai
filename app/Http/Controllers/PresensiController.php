@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Presensi;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\PegawaiActivityNotification;
 
 class PresensiController extends Controller
 {
@@ -132,6 +135,15 @@ class PresensiController extends Controller
             if ($update) {
                 echo "success|Sampai Jumpa! Hati-hati di jalan|out";
                 Storage::disk('public')->put($path, $image_base64);
+
+                // Notify admin/petugas
+                $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
+                Notification::send($notifiables, new PegawaiActivityNotification(
+                    "Clock Out",
+                    $pegawai->nama_lengkap . " (" . $pegawai->id_pegawai . ") baru saja absen pulang.",
+                    "pulang",
+                    "/presensi/monitoring"
+                ));
             } else {
                 echo "error|Gagal melakukan absensi pulang, silahkan coba lagi nanti.|out";
             }
@@ -165,6 +177,15 @@ class PresensiController extends Controller
             if ($simpan) {
                 echo "success| Selamat Bekerja! Semoga harimu menyenangkan|in";
                 Storage::disk('public')->put($path, $image_base64);
+
+                // Notify admin/petugas
+                $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
+                Notification::send($notifiables, new PegawaiActivityNotification(
+                    "Clock In",
+                    $pegawai->nama_lengkap . " (" . $pegawai->id_pegawai . ") baru saja absen masuk.",
+                    "masuk",
+                    "/presensi/monitoring"
+                ));
             } else {
                 echo "error|Gagal melakukan absensi masuk, silahkan coba lagi nanti.|in";
             }
@@ -416,6 +437,16 @@ class PresensiController extends Controller
 
 
         if ($simpan) {
+            // Notify admin/petugas
+            $pegawai = DB::table('pegawais')->where('id_pegawai', $id_pegawai)->first();
+            $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
+            Notification::send($notifiables, new PegawaiActivityNotification(
+                "Pengajuan Izin",
+                $pegawai->nama_lengkap . " (" . $pegawai->id_pegawai . ") mengajukan " . $status . " mulai " . date('d/m/Y', strtotime($tgl_izin)) . ".",
+                "izin",
+                "/petugas/verifikasi-cuti"
+            ));
+
             return redirect('/presensi/izin')
                 ->with('success', 'Pengajuan berhasil dikirim.');
         } else {

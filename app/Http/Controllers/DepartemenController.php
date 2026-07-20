@@ -14,7 +14,9 @@ class DepartemenController extends Controller
         if (!empty($nama_dept)) {
             $query->where('nama_dept', 'like', '%' . $nama_dept . '%');
         }
-        $query->orderByRaw("FIELD(departemens.nama_dept, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf') = 0")->orderByRaw("FIELD(departemens.nama_dept, 'Lurah', 'Carik', 'Jagabaya', 'Ulu-Ulu', 'Kamituwa', 'Kepala Urusan Danarta', 'Kaur Danarta', 'Kepala Urusan Pangripta', 'Kaur Pangripta', 'Kepala Urusan Tata Laksana', 'Kaur Tata Laksana', 'Kaur', 'Staf Carik', 'Staf Jagabaya', 'Staf Ulu-Ulu', 'Staf Kamituwa', 'Staf Danarta', 'Staf Tata Laksana', 'Staf')")->orderBy('departemens.nama_dept');
+        $query->orderByRaw("CASE departemens.nama_dept
+            WHEN 'IT' THEN 1 WHEN 'HRD' THEN 2 WHEN 'Keuangan' THEN 3
+            WHEN 'Marketing' THEN 4 ELSE 99 END")->orderBy('departemens.nama_dept');
         $departemen = $query->get();
         return view('departemen.index', compact('departemen'));
     }

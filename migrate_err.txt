@@ -1,0 +1,4 @@
+
+   INFO  Running migrations.  
+
+  2026_07_11_075423_change_foto_nullable_on_pegawais_table  806.58ms FAIL

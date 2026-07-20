@@ -1,0 +1,42 @@
+Memulai sinkronisasi data dari MySQL ke PostgreSQL...
+Menyalin tabel: departemens
+Gagal menyalin tabel departemens: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'departemens')
+Menyalin tabel: pegawais
+Gagal menyalin tabel pegawais: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'pegawais')
+Menyalin tabel: users
+Gagal menyalin tabel users: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'users')
+Menyalin tabel: konfigurasi_lokasis
+Gagal menyalin tabel konfigurasi_lokasis: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'konfigurasi_lokasis')
+Menyalin tabel: pengajuan_izins
+Gagal menyalin tabel pengajuan_izins: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'pengajuan_izins')
+Menyalin tabel: presensis
+Gagal menyalin tabel presensis: SQLSTATE[HY000] [2002] Connection refused (Connection: mysql, SQL: SHOW TABLES LIKE 'presensis')
+--------------------------------------------------
+Membuat Akun Dummy Per Entitas...
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42703]: Undefined column: 7 ERROR:  column "role" of relation "users" does not exist
+LINE 1: insert into "users" ("name", "email", "password", "role") va...
+                                                          ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "password", "role") values (Admin Role, admin@dummy.com, $2y$12$OsJTVM9s5QF7h/v4XYIS1.nXOyVIw2PLMAs4we6lG9LFPiBpVvmXe, admin))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:824
+    820▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    821▕                 );
+    822▕             }
+    823▕ 
+  ➜ 824▕             throw new QueryException(
+    825▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    826▕             );
+    827▕         }
+    828▕     }
+
+      [2m+7 vendor frames [22m
+
+  8   app/Console/Commands/MigrateDataFromMysql.php:102
+      Illuminate\Database\Query\Builder::insert()
+      [2m+13 vendor frames [22m
+
+  22  artisan:16
+      Illuminate\Foundation\Application::handleCommand(Object(Symfony\Component\Console\Input\ArgvInput))
+

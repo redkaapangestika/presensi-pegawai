@@ -21,10 +21,9 @@
             <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
           </svg>
         </a>
-        @if(Auth::guard('user')->user()->role == 'petugas')
+        @if(Auth::guard('user')->user()->role == 'petugas' || Auth::guard('user')->user()->role == 'admin')
           <div class="nav-item dropdown d-none d-md-flex me-3">
             <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications">
-              <!-- Download SVG icon from http://tabler-icons.io/i/bell -->
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -32,55 +31,60 @@
                 <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
               </svg>
               @php
-                $pengajuan_pending = \Illuminate\Support\Facades\DB::table('pengajuan_izin')->where('status_approved', 0)->count();
-                $today = date('Y-m-d');
-                $presensi_pending = \Illuminate\Support\Facades\DB::table('presensis')->where('tgl_presensi', $today)->whereNull('status_validasi')->count();
-                $total_pending = $pengajuan_pending + $presensi_pending;
+                $notifications = Auth::guard('user')->user()->unreadNotifications()->latest()->take(5)->get();
+                $total_pending = Auth::guard('user')->user()->unreadNotifications()->count();
               @endphp
               @if($total_pending > 0)
                 <span class="badge bg-red">{{ $total_pending }}</span>
               @endif
             </a>
-            <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
+            <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card"
+              style="width: 320px; max-height: 480px; overflow-y: auto;">
               <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                   <h3 class="card-title">Notifikasi Sistem</h3>
+                  @if($total_pending > 0)
+                    <a href="/panel/notifications/read" class="text-muted small">Tandai sudah dibaca</a>
+                  @endif
                 </div>
                 <div class="list-group list-group-flush list-group-hoverable">
-                  <div class="list-group-item">
-                    <div class="row align-items-center">
-                      <div class="col-auto">
-                        @if($total_pending > 0)
-                          <span class="status-dot status-dot-animated bg-red d-block"></span>
-                        @else
-                          <span class="status-dot bg-green d-block"></span>
-                        @endif
+                  @forelse($notifications as $notif)
+                    <a href="{{ $notif->data['url'] ?? '#' }}" class="list-group-item list-group-item-action">
+                      <div class="row align-items-center">
+                        <div class="col-auto">
+                          @if(isset($notif->data['tipe']) && $notif->data['tipe'] == 'masuk')
+                            <span class="status-dot status-dot-animated bg-green d-block"></span>
+                          @elseif(isset($notif->data['tipe']) && $notif->data['tipe'] == 'pulang')
+                            <span class="status-dot bg-blue d-block"></span>
+                          @elseif(isset($notif->data['tipe']) && $notif->data['tipe'] == 'izin')
+                            <span class="status-dot status-dot-animated bg-orange d-block"></span>
+                          @else
+                            <span class="status-dot bg-azure d-block"></span>
+                          @endif
+                        </div>
+                        <div class="col text-truncate">
+                          <div class="d-block mt-1"><b>{{ $notif->data['title'] ?? 'Pemberitahuan' }}</b></div>
+                          <div class="d-block text-muted text-truncate mt-n1 mb-2">
+                            {{ $notif->data['message'] ?? '' }}
+                          </div>
+                          <div class="text-muted small mt-1">{{ $notif->created_at->diffForHumans() }}</div>
+                        </div>
                       </div>
-                      <div class="col text-truncate">
-                        @if($pengajuan_pending > 0)
-                          <a href="/petugas/verifikasi-cuti" class="text-body d-block mt-1"><b>Verifikasi Cuti &
-                              Izin</b></a>
-                          <div class="d-block text-muted text-truncate mt-n1 mb-2">
-                            Ada {{ $pengajuan_pending }} pengajuan yang menunggu verifikasi.
+                    </a>
+                  @empty
+                    <div class="list-group-item">
+                      <div class="row align-items-center">
+                        <div class="col-auto">
+                          <span class="status-dot bg-green d-block"></span>
+                        </div>
+                        <div class="col text-truncate">
+                          <div class="d-block text-muted mt-n1">
+                            Tidak ada notifikasi aktivitas pegawai.
                           </div>
-                        @endif
-
-                        @if($presensi_pending > 0)
-                          <a href="/petugas/validasi-presensi" class="text-body d-block mt-1"><b>Validasi Presensi
-                              Harian</b></a>
-                          <div class="d-block text-muted text-truncate mt-n1 mb-2">
-                            Ada {{ $presensi_pending }} kehadiran hari ini yang belum Anda setujui.
-                          </div>
-                        @endif
-
-                        @if($total_pending == 0)
-                          <div class="d-block text-muted text-truncate mt-n1">
-                            Tidak ada notifikasi sistem yang tertunda.
-                          </div>
-                        @endif
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  @endforelse
                 </div>
               </div>
             </div>

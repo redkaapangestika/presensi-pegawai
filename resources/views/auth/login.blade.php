@@ -13,6 +13,7 @@
     <meta name="keywords" content="bootstrap 4, mobile template, cordova, phonegap, mobile, html" />
     <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}" sizes="32x32">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/icon/192x192.png') }}">
+    <link rel="preload" href="{{ asset('assets/img/login/login.png') }}" as="image">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="manifest" href="__manifest.json">
     <style>
@@ -137,7 +138,8 @@
 
         <div class="login-form mt-1">
             <div class="section">
-                <img src="{{ asset('assets/img/login/login.png')}}" alt="image" class="form-image">
+                <img src="{{ asset('assets/img/login/login.png')}}" alt="E-Presensi" class="form-image"
+                    fetchpriority="high" loading="eager" width="250" height="250">
             </div>
             <div class="section mt-1">
                 <h2>E-Presensi</h2>
@@ -203,9 +205,9 @@
     <script src="{{ asset('assets/js/lib/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/lib/bootstrap.min.js') }}"></script>
     <!-- Ionicons -->
-    <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js" defer></script>
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <!-- Base Js File -->
     <script src="{{ asset('assets/js/base.js') }}"></script>
 

@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: presensi-app
+    container_name: presensi-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - presensi-network
+
+  # Web server service untuk melayani request HTTP ke Laravel (Port 8000)
+  web:
+    image: nginx:alpine
+    container_name: presensi-web
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - presensi-network
+
+networks:
+  presensi-network:
+    driver: bridge

@@ -79,6 +79,13 @@ Route::middleware(['auth:user', 'nocache'])->group(function () {
 
     // Bisa Diakses Semua Pengelola (Admin, Petugas, Lurah)
     Route::get('/panel/dashboardadmin', [DashboardController::class, 'dashboardadmin']);
+
+    // Notifications Mark as Read
+    Route::get('/panel/notifications/read', function () {
+        Auth::guard('user')->user()->unreadNotifications->markAsRead();
+        return redirect()->back();
+    });
+
     Route::get('/panel/settings', [AuthController::class, 'settings']);
     Route::post('/panel/settings/lokasi', [AuthController::class, 'updateLokasi']);
 

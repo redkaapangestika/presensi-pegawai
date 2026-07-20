@@ -37,10 +37,11 @@
       aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <h1 class="navbar-brand navbar-brand-autodark">
-      <a href=".">
-        <img src="{{ asset('assets/img/icon/152x152.png') }}" height="60" alt="SIPERKAT Condongcatur"
-          class="navbar-brand-image" style="border-radius: 8px;">
+    <h1 class="navbar-brand navbar-brand-autodark"
+      style="margin: 16px; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      <a href="/panel/dashboardadmin" style="display: flex; justify-content: center; width: 100%;">
+        <img src="{{ asset('assets/img/logo.png') }}" alt="SIPERKAT Condongcatur"
+          style="height: 44px; width: auto; object-fit: contain;">
       </a>
     </h1>
     <div class="navbar-nav flex-row d-lg-none">

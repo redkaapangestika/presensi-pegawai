@@ -25,7 +25,7 @@ class DashboardController extends Controller
             ->get();
 
         $rekappresensi = DB::table('presensis')
-            ->selectRaw('COUNT(id_pegawai) as jmlhadir, SUM(IF(jam_in > "08.00:00", 1, 0)) as jmlterlambat')
+            ->selectRaw("COUNT(id_pegawai) as jmlhadir, SUM(CASE WHEN jam_in > '08:00:00' THEN 1 ELSE 0 END) as jmlterlambat")
             ->where('id_pegawai', $id_pegawai)
             ->whereMonth('tgl_presensi', $bulanini)
             ->whereYear('tgl_presensi', $tahunini)
@@ -39,7 +39,7 @@ class DashboardController extends Controller
         $namabulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
         $rekapizin = DB::table('pengajuan_izin')
-            ->selectRaw('SUM(IF(status="i",1,0)) as jmlizin, SUM(IF(status="s",1,0)) as jmlsakit, SUM(IF(status="c",1,0)) as jmlcutitahunan, SUM(IF(status="m",1,0)) as jmlcutimelahirkan, SUM(IF(status="cl",1,0)) as jmlcutilainnya')
+            ->selectRaw("SUM(CASE WHEN status='i' THEN 1 ELSE 0 END) as jmlizin, SUM(CASE WHEN status='s' THEN 1 ELSE 0 END) as jmlsakit, SUM(CASE WHEN status='c' THEN 1 ELSE 0 END) as jmlcutitahunan, SUM(CASE WHEN status='m' THEN 1 ELSE 0 END) as jmlcutimelahirkan, SUM(CASE WHEN status='cl' THEN 1 ELSE 0 END) as jmlcutilainnya")
             ->where('id_pegawai', $id_pegawai)
             ->whereMonth('tgl_izin', $bulanini)
             ->whereYear('tgl_izin', $tahunini)
@@ -54,12 +54,12 @@ class DashboardController extends Controller
         $bulanini = date("m") * 1; //1 atau Januari
         $tahunini = date("Y"); //2026
         $rekappresensi = DB::table('presensis')
-            ->selectRaw('COUNT(id_pegawai) as jmlhadir, SUM(IF(jam_in > "08.00:00", 1, 0)) as jmlterlambat')
+            ->selectRaw("COUNT(id_pegawai) as jmlhadir, SUM(CASE WHEN jam_in > '08:00:00' THEN 1 ELSE 0 END) as jmlterlambat")
             ->whereDate('tgl_presensi', $hariini)
             ->first();
 
         $rekapizin = DB::table('pengajuan_izin')
-            ->selectRaw('SUM(IF(status="i",1,0)) as jmlizin, SUM(IF(status="s",1,0)) as jmlsakit, SUM(IF(status="c",1,0)) as jmlcutitahunan, SUM(IF(status="m",1,0)) as jmlcutimelahirkan, SUM(IF(status="cl",1,0)) as jmlcutilainnya')
+            ->selectRaw("SUM(CASE WHEN status='i' THEN 1 ELSE 0 END) as jmlizin, SUM(CASE WHEN status='s' THEN 1 ELSE 0 END) as jmlsakit, SUM(CASE WHEN status='c' THEN 1 ELSE 0 END) as jmlcutitahunan, SUM(CASE WHEN status='m' THEN 1 ELSE 0 END) as jmlcutimelahirkan, SUM(CASE WHEN status='cl' THEN 1 ELSE 0 END) as jmlcutilainnya")
             ->whereMonth('tgl_izin', $bulanini)
             ->whereYear('tgl_izin', $tahunini)
             ->where('status_approved', '1') // Hanya menghitung izin yang disetujui
