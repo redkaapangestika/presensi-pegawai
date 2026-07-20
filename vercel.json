@@ -12,7 +12,7 @@
     ],
     "routes": [
         {
-            "src": "/(assets|uploads|css|js)/(.*)",
+            "src": "/(assets|uploads|css|js|tabler)/(.*)",
             "dest": "/public/$1/$2"
         },
         {
