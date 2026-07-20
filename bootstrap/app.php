@@ -20,8 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->renderable(function (\Throwable $e) {
-            if (request()->is('proseslogin*') || request()->is('prosesloginadmin*')) {
-                dd('ERROR ASLI SEBELUM CRASH VIEW:', $e->getMessage(), $e->getTraceAsString());
-            }
+            // Cegat semua exception sebelum masuk ke View Error Handler
+            dd(
+                'ERROR ASLI SEBELUM CRASH VIEW:',
+                $e->getMessage(),
+                $e->getFile() . ':' . $e->getLine(),
+                $e->getTraceAsString()
+            );
         });
     })->create();
