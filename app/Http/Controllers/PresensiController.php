@@ -123,7 +123,7 @@ class PresensiController extends Controller
             if ($request->hasFile('berkas_log')) {
                 $berkas_log = $request->file('berkas_log');
                 $fileNameBerkas = $id_pegawai . '_' . $tgl_presensi . "_log_" . Carbon::now()->format('His') . '.' . $berkas_log->getClientOriginalExtension();
-                $berkas_log->storeAs('uploads/log_kerja', $fileNameBerkas, 'public');
+                $berkas_log->storeAs('uploads/log_kerja', $fileNameBerkas, 'supabase');
                 $data_pulang['berkas_log'] = $fileNameBerkas;
             }
 
@@ -134,7 +134,7 @@ class PresensiController extends Controller
 
             if ($update) {
                 echo "success|Sampai Jumpa! Hati-hati di jalan|out";
-                Storage::disk('public')->put($path, $image_base64);
+                Storage::disk('supabase')->put($path, $image_base64);
 
                 // Notify admin/petugas
                 $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
@@ -176,7 +176,7 @@ class PresensiController extends Controller
             }
             if ($simpan) {
                 echo "success| Selamat Bekerja! Semoga harimu menyenangkan|in";
-                Storage::disk('public')->put($path, $image_base64);
+                Storage::disk('supabase')->put($path, $image_base64);
 
                 // Notify admin/petugas
                 $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
@@ -246,7 +246,7 @@ class PresensiController extends Controller
         if ($update) {
             if ($request->hasFile('foto')) {
                 $folderPath = 'uploads/pegawai/';
-                $request->file('foto')->storeAs('uploads/pegawai', $foto, 'public');
+                $request->file('foto')->storeAs('uploads/pegawai', $foto, 'supabase');
             }
             return Redirect()->back()->with('success', 'Profile berhasil diupdate');
         } else {
