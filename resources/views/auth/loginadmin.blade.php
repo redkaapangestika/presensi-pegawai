@@ -64,13 +64,24 @@
       transition: 0.3s;
     }
 
-    [data-bs-theme="dark"] body {
+    body[data-bs-theme="dark"] {
+      background-color: #0f172a !important;
       background-image: none !important;
     }
 
-    [data-bs-theme="dark"] .theme-toggle {
+    body[data-bs-theme="dark"] .theme-toggle {
       background: rgba(255, 255, 255, 0.1);
       color: #f8fafc;
+    }
+
+    body[data-bs-theme="dark"] .card-md {
+      background-color: #1e293b !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    body[data-bs-theme="dark"] h2,
+    body[data-bs-theme="dark"] p {
+      color: #f8fafc !important;
     }
   </style>
 </head>
@@ -100,13 +111,13 @@
   <div class="page page-center">
     <div class="container container-normal py-4">
       <div class="container container-tight py-4">
-      <div class="card card-md mt-4">
-        <div class="card-body">
-          <div class="text-center mb-4 mt-2">
-            <img src="{{ asset('assets/img/login/login.png') }}" height="220" class="d-block mx-auto"
+        <div class="card card-md mt-4">
+          <div class="card-body">
+            <div class="text-center mb-4 mt-2">
+              <img src="{{ asset('assets/img/login/login.png') }}" height="220" class="d-block mx-auto"
                 style="border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);" alt="">
-          </div>
-          <h2 class="h2 text-center mb-1">Login Panel</h2>
+            </div>
+            <h2 class="h2 text-center mb-1">Login Panel</h2>
             <p class="text-muted text-center mb-4">Admin &bull; Petugas &bull; Lurah</p>
             @if (Session::get('warning'))
               <div class="alert alert-warning">

@@ -149,7 +149,7 @@
     <div class="bg-profile-curve">
         <div class="avatar">
             @if(!empty($data->foto))
-                <img src="{{ asset('storage/uploads/pegawai/' . $data->foto) }}" alt="avatar">
+                <img src="{{ Storage::url('uploads/pegawai/' . $data->foto) }}" alt="avatar">
             @else
                 <img src="assets/img/sample/avatar/avatar1.jpg" alt="avatar">
             @endif

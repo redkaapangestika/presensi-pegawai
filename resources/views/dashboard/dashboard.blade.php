@@ -256,7 +256,7 @@
         <div class="profile-info">
             <div class="avatar">
                 @if(!empty(Auth::guard('pegawai')->user()->foto))
-                    <img src="{{ asset('storage/uploads/pegawai/' . Auth::guard('pegawai')->user()->foto) }}" alt="avatar">
+                    <img src="{{ Storage::url('uploads/pegawai/' . Auth::guard('pegawai')->user()->foto) }}" alt="avatar">
                 @else
                     <img src="assets/img/sample/avatar/avatar1.jpg" alt="avatar">
                 @endif
@@ -310,7 +310,7 @@
         <div class="box-presensi box-masuk">
             <div class="icon">
                 @if($presensihariini !== null && $presensihariini->foto_in !== null)
-                    <img src="{{ url('storage/uploads/absensi/' . $presensihariini->foto_in) }}" class="presensi-photo"
+                    <img src="{{ Storage::url('uploads/absensi/' . $presensihariini->foto_in) }}" class="presensi-photo"
                         alt="Foto Masuk">
                 @else
                     <ion-icon name="camera"></ion-icon>
@@ -325,7 +325,7 @@
         <div class="box-presensi box-pulang">
             <div class="icon">
                 @if($presensihariini !== null && $presensihariini->foto_out !== null)
-                    <img src="{{ url('storage/uploads/absensi/' . $presensihariini->foto_out) }}" class="presensi-photo"
+                    <img src="{{ Storage::url('uploads/absensi/' . $presensihariini->foto_out) }}" class="presensi-photo"
                         alt="Foto Pulang">
                 @else
                     <ion-icon name="camera"></ion-icon>
@@ -423,7 +423,7 @@
                         <li>
                             <div class="item">
                                 @if(!empty($d->foto))
-                                    <img src="{{ url('storage/uploads/pegawai/' . $d->foto) }}" alt="image"
+                                    <img src="{{ Storage::url('uploads/pegawai/' . $d->foto) }}" alt="image"
                                         class="image rounded-circle" style="width: 48px; border:2px solid #e5e7eb;">
                                 @else
                                     <img src="assets/img/sample/avatar/avatar1.jpg" alt="image" class="image rounded-circle"

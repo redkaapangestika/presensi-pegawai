@@ -67,6 +67,7 @@ return [
             'region' => env('SUPABASE_REGION', 'ap-southeast-1'), // Optional, usually ap-southeast-1 for SG
             'bucket' => env('SUPABASE_BUCKET', 'presensi'),
             'endpoint' => env('SUPABASE_ENDPOINT'),
+            'url' => env('SUPABASE_ENDPOINT') ? str_replace('/s3', '/object/public/' . env('SUPABASE_BUCKET'), env('SUPABASE_ENDPOINT')) : '',
             'use_path_style_endpoint' => true, // Required for Supabase / S3 compatible APIs
             'throw' => true,
         ],

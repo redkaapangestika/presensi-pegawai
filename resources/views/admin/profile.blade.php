@@ -39,7 +39,7 @@
                             <div class="mb-3 text-center">
                                 @if(!empty($user->foto))
                                     <span class="avatar avatar-xl mb-3"
-                                        style="background-image: url('{{ asset('storage/uploads/admin/' . $user->foto) }}')"></span>
+                                        style="background-image: url('{{ Storage::url('uploads/admin/' . $user->foto) }}')"></span>
                                 @else
                                     <span class="avatar avatar-xl mb-3"
                                         style="background-image: url('https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random')"></span>

@@ -60,7 +60,7 @@
         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
           @php
             $userFotoSide = Auth::guard('user')->user()->foto;
-            $avatarUrlSide = $userFotoSide ? asset('storage/uploads/admin/' . $userFotoSide) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::guard('user')->user()->name) . '&background=random';
+            $avatarUrlSide = $userFotoSide ? Storage::url('uploads/admin/' . $userFotoSide) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::guard('user')->user()->name) . '&background=random';
           @endphp
           <span class="avatar avatar-sm" style="background-image: url('{{ $avatarUrlSide }}')"></span>
           <div class="d-none d-xl-block ps-2">
