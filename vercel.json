@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "buildCommand": "echo 'Build already done locally'",
     "outputDirectory": "public",
     "functions": {
         "api/index.php": {
