@@ -1,11 +1,6 @@
 {
     "version": 2,
     "outputDirectory": "public",
-    "build": {
-        "env": {
-            "NODE_OPTIONS": "--experimental-default-type=commonjs"
-        }
-    },
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.2"
@@ -22,7 +17,6 @@
         }
     ],
     "env": {
-        "NODE_OPTIONS": "--experimental-default-type=commonjs",
         "APP_ENV": "production",
         "APP_DEBUG": "false",
         "LOG_CHANNEL": "stderr",

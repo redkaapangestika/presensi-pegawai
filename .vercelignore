@@ -4,3 +4,6 @@
 /storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/logs/*
+/package.json
+/package-lock.json
+/api/package.json
