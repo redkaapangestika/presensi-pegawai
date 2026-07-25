@@ -148,11 +148,26 @@
             }
 
             .hero {
-                grid-column: 1;
-                grid-row: 2 / 6;
-                padding-top: 8px;
-            }
+            grid-column: 1;
+            grid-row: 2 / 6;
+            padding-top: 14px;
+            align-items: flex-start;
+            text-align: left;
+        }
 
+        .logo-ring {
+            justify-content: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .logo-ring img {
+            height: 100px; /* Jauh lebih besar dan gagah untuk layar Desktop */
+            margin-left: -5px; /* Penyesuaian padding optikal kiri */
+        }
+
+        .hero-sub {
+            margin: 0;
+        }
             .stats-row {
                 grid-column: 2;
                 grid-row: 2;
@@ -247,20 +262,29 @@
 
         /* ── Hero ── */
         .hero {
-            padding: 24px 0 36px;
+            padding: 24px 0 32px;
             animation: fadeUp 0.7s ease-out both;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .logo-ring {
-            display: inline-block;
-            margin-bottom: 24px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .logo-ring img {
-            height: 64px;
+            height: 48px; /* Dikecilkan agar pas untuk lebar layar HP */
             width: auto;
+            max-width: 100%;
+            object-fit: contain;
             display: block;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.3));
         }
 
         @keyframes pulse-ring {
@@ -285,10 +309,10 @@
         }
 
         .hero-title {
-            font-size: clamp(1.8rem, 8vw, 3rem);
+            font-size: clamp(2.2rem, 9vw, 3.2rem);
             font-weight: 900;
             line-height: 1.1;
-            letter-spacing: -1.5px;
+            letter-spacing: -1.2px;
             margin-bottom: 16px;
             background: linear-gradient(135deg, #f0f6ff 0%, #7ec8f5 60%, #a5b4fc 100%);
             -webkit-background-clip: text;
@@ -297,10 +321,11 @@
         }
 
         .hero-sub {
-            font-size: clamp(0.83rem, 3vw, 0.95rem);
+            font-size: clamp(0.85rem, 3.8vw, 0.95rem);
             color: var(--text-muted);
-            line-height: 1.65;
+            line-height: 1.6;
             max-width: 340px;
+            margin: 0 auto;
         }
 
         /* ── Stats row ── */
