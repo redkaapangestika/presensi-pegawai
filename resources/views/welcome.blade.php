@@ -733,15 +733,6 @@
             </a>
         </div>
 
-        <!-- Info strip -->
-        <div class="info-strip">
-            <div class="info-strip-body">
-                <strong>Login Pegawai</strong>: gunakan <strong>ID Pegawai</strong> (contoh: <strong>L0001</strong>) dan
-                password <strong>1234</strong>.
-                Untuk Admin/Lurah/Petugas, gunakan akun email di Portal Pengelola.
-            </div>
-        </div>
-
         <!-- Footer -->
         <footer class="footer">
             &copy; <?php echo date('Y'); ?> Kalurahan Condongcatur &mdash; Depok, Sleman.<br>
