@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('presensis', function (Blueprint $table) {
-            $table->integer('status_acc_log')->default(0)->after('berkas_log');
+            $table->integer('status_acc_log')->default(0);
         });
     }
 

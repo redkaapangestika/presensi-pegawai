@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('presensis', function (Blueprint $table) {
-            $table->enum('status_validasi', ['valid', 'invalid'])->nullable();
+            $table->foreign('id_pegawai')->references('id_pegawai')->on('pegawais')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('presensis', function (Blueprint $table) {
-            $table->dropColumn('status_validasi');
+            $table->dropForeign(['id_pegawai']);
         });
     }
 };

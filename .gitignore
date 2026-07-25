@@ -21,3 +21,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Local Troubleshooting Scripts & Error Logs
+*.ps1
+fix_db_*
+latest_logs.txt

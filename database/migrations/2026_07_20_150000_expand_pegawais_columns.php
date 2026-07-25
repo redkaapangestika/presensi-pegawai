@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('pegawais', function (Blueprint $table) {
             // Perlebar kolom agar cukup menampung data asli
-            $table->string('id_pegawai', 10)->change();
+            // $table->string('id_pegawai', 10)->change();
             $table->string('nama_lengkap', 150)->change();
             $table->string('jabatan', 60)->change();
             $table->string('no_hp', 20)->nullable()->change();
@@ -20,7 +20,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('pegawais', function (Blueprint $table) {
-            $table->char('id_pegawai', 5)->change();
+            // $table->char('id_pegawai', 5)->change();
             $table->string('nama_lengkap', 100)->change();
             $table->string('jabatan', 20)->change();
             $table->string('no_hp', 13)->change();

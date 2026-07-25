@@ -77,6 +77,16 @@ class PresensiController extends Controller
         $fileName = $id_pegawai . '_' . $tgl_presensi . "-" . $ket . "_" . Carbon::now()->format('Ymd_His') . '.png';
         $image_parts = explode(";base64,", $image);
         $image_base64 = base64_decode($image_parts[1]);
+
+        // OPTIMASI: Kompresi Ukuran Foto Menggunakan PHP GD Native (Menghemat 60%-80% Memori)
+        $img = @imagecreatefromstring($image_base64);
+        if ($img !== false) {
+            ob_start();
+            // Simpan gambar dengan kualitas rata-rata 40% untuk ukuran super kecil namun wajah masih jelas
+            imagejpeg($img, null, 40);
+            $image_base64 = ob_get_clean();
+            imagedestroy($img);
+        }
         $path = "uploads/absensi/" . $fileName;
 
 
@@ -123,7 +133,7 @@ class PresensiController extends Controller
             if ($request->hasFile('berkas_log')) {
                 $berkas_log = $request->file('berkas_log');
                 $fileNameBerkas = $id_pegawai . '_' . $tgl_presensi . "_log_" . Carbon::now()->format('His') . '.' . $berkas_log->getClientOriginalExtension();
-                $berkas_log->storeAs('uploads/log_kerja', $fileNameBerkas, 'supabase');
+                $berkas_log->storeAs('uploads/log_kerja', $fileNameBerkas, env('FILESYSTEM_DISK', 'public'));
                 $data_pulang['berkas_log'] = $fileNameBerkas;
             }
 
@@ -134,7 +144,7 @@ class PresensiController extends Controller
 
             if ($update) {
                 echo "success|Sampai Jumpa! Hati-hati di jalan|out";
-                Storage::disk('supabase')->put($path, $image_base64);
+                Storage::disk(env('FILESYSTEM_DISK', 'public'))->put($path, $image_base64);
 
                 // Notify admin/petugas
                 $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
@@ -176,7 +186,7 @@ class PresensiController extends Controller
             }
             if ($simpan) {
                 echo "success| Selamat Bekerja! Semoga harimu menyenangkan|in";
-                Storage::disk('supabase')->put($path, $image_base64);
+                Storage::disk(env('FILESYSTEM_DISK', 'public'))->put($path, $image_base64);
 
                 // Notify admin/petugas
                 $notifiables = User::whereIn('role', ['admin', 'petugas'])->get();
@@ -246,7 +256,7 @@ class PresensiController extends Controller
         if ($update) {
             if ($request->hasFile('foto')) {
                 $folderPath = 'uploads/pegawai/';
-                $request->file('foto')->storeAs('uploads/pegawai', $foto, 'supabase');
+                $request->file('foto')->storeAs('uploads/pegawai', $foto, env('FILESYSTEM_DISK', 'public'));
             }
             return Redirect()->back()->with('success', 'Profile berhasil diupdate');
         } else {

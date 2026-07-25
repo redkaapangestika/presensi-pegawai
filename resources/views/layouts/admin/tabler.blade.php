@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-* Tabler - Premium and Open Source dashboard template with responsive and high quality UI.
+* E-Presensi Kalurahan Condongcatur
 * @version 1.0.0-beta17
 * @link https://tabler.io
 * Copyright 2018-2023 The Tabler Authors

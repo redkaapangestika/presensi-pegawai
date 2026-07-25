@@ -74,7 +74,7 @@ class PegawaiController extends Controller
             if ($simpan) {
                 if ($request->hasFile('foto')) {
                     $folderPath = 'uploads/pegawai/';
-                    $request->file('foto')->storeAs('uploads/pegawai', $foto, 'public');
+                    $request->file('foto')->storeAs('uploads/pegawai', $foto, env('FILESYSTEM_DISK', 'public'));
                 }
                 return redirect()->back()->with('success', 'Data pegawai berhasil disimpan.');
             } else {
@@ -125,10 +125,10 @@ class PegawaiController extends Controller
             if ($update) {
                 if ($request->hasFile('foto')) {
                     $oldPath = 'uploads/pegawai/' . $old_foto;
-                    if ($old_foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                    if ($old_foto && \Illuminate\Support\Facades\Storage::disk(env('FILESYSTEM_DISK', 'public'))->exists($oldPath)) {
+                        \Illuminate\Support\Facades\Storage::disk(env('FILESYSTEM_DISK', 'public'))->delete($oldPath);
                     }
-                    $request->file('foto')->storeAs('uploads/pegawai', $foto, 'public');
+                    $request->file('foto')->storeAs('uploads/pegawai', $foto, env('FILESYSTEM_DISK', 'public'));
                 }
                 return redirect()->back()->with('success', 'Data pegawai berhasil disimpan.');
             } else {

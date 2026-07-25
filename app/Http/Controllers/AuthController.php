@@ -66,7 +66,7 @@ class AuthController extends Controller
 
         if ($request->hasFile('foto')) {
             $foto = $user_id . "-" . time() . "." . $request->file('foto')->getClientOriginalExtension();
-            $request->file('foto')->storeAs('uploads/admin', $foto, 'public');
+            $request->file('foto')->storeAs('uploads/admin', $foto, env('FILESYSTEM_DISK', 'public'));
             $data['foto'] = $foto;
         }
 
