@@ -157,7 +157,8 @@
                     <label class="fw-bold text-dark">Target Pekerjaan Dari Petugas</label>
                     <div
                         style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #334155; white-space: pre-wrap; font-size: 14px; border: 1px solid #cbd5e1;">
-                        {{ $isiLogKerja }}</div>
+                        {{ $isiLogKerja }}
+                    </div>
 
                     <div class="mb-3 d-flex align-items-start" style="gap: 10px;">
                         <input type="checkbox" id="tugas_selesai" value="1"
@@ -303,9 +304,19 @@
                 formData.append('berkas_log', berkas_log);
             }
 
-            Webcam.snap(function (uri) {
-                image = uri;
-            });
+            var image = '';
+            try {
+                Webcam.snap(function (uri) {
+                    image = uri;
+                });
+            } catch (err) {
+                Swal.fire({
+                    title: 'Akses Kamera Gagal!',
+                    text: 'Kamera diblokir atau belum siap. Tolong akses menggunakan "localhost" (bukan IP/Laragon .test) atau izinkan kamera di browser kamu.',
+                    icon: 'error'
+                });
+                return false;
+            }
             var lokasi = $("#lokasi").val();
 
             formData.append('image', image);
